@@ -4,6 +4,6 @@ bin/gits
 bin/linux
 bin/darwin
 
-!/src/hub/vendor/
-/src/hub/vendor/*
-!/src/hub/vendor/vendor.json
+!/src/gits/vendor/
+/src/gits/vendor/*
+!/src/gits/vendor/vendor.json
