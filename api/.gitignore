@@ -1,0 +1,9 @@
+gits-key*
+pkg/
+bin/gits
+bin/linux
+bin/darwin
+
+!/src/hub/vendor/
+/src/hub/vendor/*
+!/src/hub/vendor/vendor.json
