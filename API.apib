@@ -1,0 +1,181 @@
+FORMAT: 1A
+HOST: http://secrets.agilestacks.com/api/v1
+
+# Git Service API
+
+Git Service has protected HTTP API to provide access to it's functions, such as:
+
+- creating Git repository from template (unpack from an S3 binary blob);
+- uploading files to the repository as commits.
+
+Please read [design](https://github.com/agilestacks/git-service/blob/master/README.md) first.
+
+
+## Repository [/repositories/{repositoryId}]
+
+`repositoryId` format is `<organization>/<template name>-<template id>`. Template `id` is used
+by Git SSH server to obtain repository permissions. SSH key offered by client is used to find
+users, then traverse to teams, then check for (1) template owner and (2) teams permissions on the
+template.
+URL names are lowercased, non-alphanumeric characters replaced by dashes `-`.
+
++ Parameters
+    + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
+
+
+### Retrieve Repository Git Log [GET /repositories/{repositoryId}/log]
+
++ Parameters
+    + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
+
++ Request
+
+    + Headers
+
+            X-API-Secret: git-api-secret
+
++ Response 200 (text/plain; charset=utf-8)
+
+    + Body
+
+            commit 4da13d0749c001bc3257381051a22c139fee7751
+            Author: Antons Kranga <anton@agilestacks.com>
+            Date:   Wed Aug 2 17:36:54 2017 +0300
+
+                Introduced deployment components
+
+            commit b22432beb65acc29d688a6bb12184d12d72b81d8
+            Author: Arkadi Shishlov <arkadi.shishlov@gmail.com>
+            Date:   Tue Aug 1 17:49:45 2017 +0300
+
+                Design outline
+
++ Response 400
+
++ Response 404
+
++ Response 403
+
+
+### Create Repository [PUT]
+
+`archive` is optional. If supplied the content of the repository is unpacked from the archive, so it
+must be a bare git repo at root of the archive. Otherwise an empty repository is initialized.
+
++ Request (application/json; charset=utf-8)
+
+    + Headers
+
+            X-API-Secret: git-api-secret
+
+    + Body
+
+            {
+                "archive": "s3://agilestacks/blobs/stack-k8s-aws-1.2.5664.tar.bz2"
+            }
+
++ Response 201
+
++ Response 403
+
++ Response 400 (application/json; charset=utf-8)
+
+            {
+                "error": "Error parse JSON input"
+            }
+
++ Response 500
+
++ Response 502
+
++ Response 504
+
+
+### Upload file [PUT /repositories/{repositoryId}/commit/file/path{?message}]
+
+Upload a single file and commit to the repository.
+
++ Parameters
+    + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
+    + message: `log entry` (string, optional) - Git commit log message
+
++ Request (application/json; charset=utf-8)
+
+    + Headers
+
+            X-API-Secret: git-api-secret
+
+    + Body
+
+            file content
+
++ Response 204
+
++ Response 404
+
++ Response 403
+
++ Response 500
+
++ Response 502
+
++ Response 504
+
+
+### Upload files [POST /repositories/{repositoryId}/commit{?message}]
+
+Upload multiple files and commit to the repository.
+
++ Parameters
+    + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
+    + message: `log entry` (string, optional) - Git commit log message
+
++ Request (application/json; charset=utf-8)
+
+    + Headers
+
+            X-API-Secret: git-api-secret
+            Content-Type: multipart/form-data; boundary="boundary"
+
+    + Body
+
+            --boundary
+            Content-Disposition: form-data; name="hub.yaml"; filename="hub.yaml"
+
+            ...
+            --boundary
+            Content-Disposition: form-data; name="hub-parameters.yaml"; filename="cloud/hub-parameters.yaml"
+
+            ...
+            --boundary--
+
++ Response 204
+
++ Response 404
+
++ Response 403
+
++ Response 500
+
++ Response 502
+
++ Response 504
+
+
+### Delete Repository [DELETE]
+
++ Request
+
+    + Headers
+
+            X-API-Secret: git-api-secret
+
++ Response 204
+
++ Response 404
+
++ Response 403
+
++ Response 502
+
++ Response 504
