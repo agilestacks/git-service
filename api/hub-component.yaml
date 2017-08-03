@@ -1,0 +1,36 @@
+---
+version: 1
+kind: component
+meta:
+  name: git-service
+  brief: Git service
+  source:
+      dir: ../api
+
+requires:
+- kubernetes
+
+parameters:
+- name: component.git-service
+  parameters:
+  - name: namespace
+    default: automation-hub
+    env:  NAMESPACE
+  - name: image
+    env:  IMAGE
+  - name: service
+    default: git
+- name: dns.domain
+  brief: DNS domain
+  kind: tech
+
+templates:
+  files: ["templates/*.template"]
+  extra:
+  - kind: curly
+    files: ["*.template"]
+
+outputs:
+- name: component.git-service.endpoint
+  brief: Git service API endpoint
+  value: http://git-service.app.${dns.domain}

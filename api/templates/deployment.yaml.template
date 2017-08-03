@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: git-service
+  namespace: ${component.git-service.namespace}
+  labels:
+    provider: agilestacks.com
+    project: git-service
+    qualifier: gits
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: git-service
+      namespace: ${component.git-service.namespace}
+      labels:
+        provider: agilestacks.com
+        project: git-service
+        qualifier: gits
+    spec:
+      containers:
+      - name: git-service
+        image: ${component.git-service.image}
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8005
+        - name: ssh
+          containerPort: 2022
+          
