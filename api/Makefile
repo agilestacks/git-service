@@ -41,7 +41,6 @@ clean:
 	@find src -not -path "*src/gits*" -not -path "src" -type d -maxdepth 1 | xargs rm -rf
 
 build:
-	@git rev-parse HEAD | colrm 7 > rev.txt
 	@docker build -t $(IMAGE_NAME) .
 .PHONY: build
 
