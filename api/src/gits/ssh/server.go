@@ -68,7 +68,7 @@ func checkKey(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error
 	keyPrint := keyFingerprint(key)
 	users, err := api.UsersBySshKey(key64, keyPrint)
 	if err != nil {
-		log.Printf("Unable to search for users by SSH key fingerprint `%s`: %v", keyPrint, err)
+		log.Printf("Unable to search for users by SSH key with fingerprint `%s`: %v", keyPrint, err)
 		return nil, err
 	}
 	if len(users) == 0 {
@@ -141,7 +141,7 @@ func handleRequests(users []string, sshChannel ssh.Channel, requests <-chan *ssh
 			break
 
 		case "exec":
-			cmd, err := repo.GitServer(gitCommand(payload), sshChannel, sshChannel, sshChannel.Stderr())
+			cmd, err := repo.GitServer(gitCommand(payload), sshChannel, sshChannel, sshChannel.Stderr(), users)
 			if err != nil {
 				log.Printf("Failed to start Git server: %v", err)
 				request.Reply(false, nil)

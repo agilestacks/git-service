@@ -15,7 +15,7 @@ const (
 	gitBinDefault = "/usr/bin/git"
 )
 
-func GitServer(command string, stdin io.Reader, stdout io.Writer, stderr io.Writer) (*exec.Cmd, error) {
+func GitServer(command string, stdin io.Reader, stdout io.Writer, stderr io.Writer, users []string) (*exec.Cmd, error) {
 	if config.Debug {
 		log.Printf("Git command requested: %q", command)
 	}
@@ -36,8 +36,24 @@ func GitServer(command string, stdin io.Reader, stdout io.Writer, stderr io.Writ
 	if config.Debug {
 		log.Printf("Git command parsed: %s %s", verb, repo)
 	}
-	repoPath := filepath.Join(config.RepoDir, repo)
 
+	hasAccess, err := access(repo, users)
+	if err != nil {
+		log.Printf("Checking `%s` repo permissions for %v: %v", repo, users, err)
+	}
+	if !hasAccess {
+		err := fmt.Errorf("%v have no access to `%s`", users, repo)
+		if config.Verbose {
+			log.Printf("%v", err)
+		}
+		return nil, err
+	} else {
+		if config.Debug {
+			log.Printf("%v have access to `%s`", users, repo)
+		}
+	}
+
+	repoPath := filepath.Join(config.RepoDir, repo)
 	gitBinPath, err := exec.LookPath(verb)
 	if err != nil {
 		if config.Trace {
@@ -47,7 +63,7 @@ func GitServer(command string, stdin io.Reader, stdout io.Writer, stderr io.Writ
 	}
 
 	cmd := exec.Cmd{
-		Path:   gitBinPath,
+		Path: gitBinPath,
 		// Stdin:  stdin,
 		Stdout: stdout,
 		Stderr: stderr,
