@@ -11,7 +11,7 @@ Name of the repository is `user's organization name/template name-template id`. 
 
 Git Service is accessed by end-user over SSH with public key authentication. Git Service request following information from Automation Hub:
 
-1. Get the list of users that have SSH public key equal that of received  during SSH authentication phase (the keys are offered by client). The API resource is `/user/keys/<public key content>`.
+1. Get the list of users that have SSH public key equal that of received  during SSH authentication phase (the keys are offered by client). The API resource is `/user/keys?fingerprint=<public key sha256 fingerprint>`.
 2. Retrieve template owner and teams permissions set on the template by extracting template `id` from accessed Git repository URL. The resource is `/templates/:id`.
 
 Git Service requests User to Team membership information from Authentication Service (in turn backed by Okta) on `/teams/:id`.
