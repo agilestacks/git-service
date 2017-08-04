@@ -10,8 +10,8 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"gits/api"
 	"gits/config"
+	"gits/extapi"
 	"gits/repo"
 )
 
@@ -66,7 +66,7 @@ func accept(conn net.Conn, server *ssh.ServerConfig) {
 func checkKey(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
 	key64 := keyBase64(key)
 	keyPrint := keyFingerprint(key)
-	users, err := api.UsersBySshKey(key64, keyPrint)
+	users, err := extapi.UsersBySshKey(key64, keyPrint)
 	if err != nil {
 		log.Printf("Unable to search for users by SSH key with fingerprint `%s`: %v", keyPrint, err)
 		return nil, err

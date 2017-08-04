@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"gits/api"
+	"gits/extapi"
 )
 
 type UserAccess struct {
@@ -19,7 +19,7 @@ func access(repo string, verb string, users []string) (bool, error) {
 	}
 	templateId := repo[dash+1:]
 
-	template, err := api.TemplateById(templateId)
+	template, err := extapi.TemplateById(templateId)
 	if err != nil {
 		return false, fmt.Errorf("Unable to fetch template `%s` info: %v", templateId, err)
 	}
@@ -29,7 +29,7 @@ func access(repo string, verb string, users []string) (bool, error) {
 
 	var teamErr error
 	for _, team := range template.Teams {
-		teamUsers, err := api.UsersByTeam(team.TeamId)
+		teamUsers, err := extapi.UsersByTeam(team.TeamId)
 		if err != nil {
 			if teamErr == nil {
 				teamErr = err

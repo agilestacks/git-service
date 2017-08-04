@@ -1,4 +1,4 @@
-package api
+package extapi
 
 import (
 	"net/http"
