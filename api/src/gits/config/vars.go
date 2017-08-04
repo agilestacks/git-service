@@ -17,7 +17,14 @@ var (
 	SshPort     int
 	HostKeyFile string
 	BlobsFrom   []string
-	ApiSecret   string
+
+	GitApiSecret string
+
+	NoExtApiCalls   bool
+	HubApiSecret    string
+	AuthApiSecret   string
+	HubApiEndpoint  string
+	AuthApiEndpoint string
 )
 
 func Update() {
