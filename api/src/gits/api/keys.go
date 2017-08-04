@@ -15,8 +15,6 @@ type HubUserKey struct {
 	PublicKey string
 }
 
-var agileUsers = []string{"anton", "arkadi", "igor", "igorlysak", "nikolay", "oleg", "rick"}
-
 func UsersBySshKey(keyBase64 string, keyFingerprintSHA256 string) ([]string, error) {
 	if config.NoExtApiCalls {
 		return agileUsers, nil
