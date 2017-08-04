@@ -7,7 +7,12 @@ import (
 	"gits/api"
 )
 
-func access(repo string, users []string) (bool, error) {
+type UserAccess struct {
+	UserId   string
+	CanWrite bool
+}
+
+func access(repo string, verb string, users []string) (bool, error) {
 	dash := strings.LastIndex(repo, "-")
 	if dash <= 1 || dash >= len(repo)-1 {
 		return false, fmt.Errorf("Unable to determine stack template id from repo name `%s`", repo)
@@ -19,24 +24,29 @@ func access(repo string, users []string) (bool, error) {
 		return false, fmt.Errorf("Unable to fetch template `%s` info: %v", templateId, err)
 	}
 
-	granted := make([]string, 0, 1)
-	granted = append(granted, template.OwnerUserId)
+	granted := make([]UserAccess, 0, 1)
+	granted = append(granted, UserAccess{UserId: template.OwnerUserId, CanWrite: true})
 
 	var teamErr error
-	for _, teamId := range template.Teams {
-		team, err := api.UsersByTeam(teamId)
+	for _, team := range template.Teams {
+		teamUsers, err := api.UsersByTeam(team.TeamId)
 		if err != nil {
 			if teamErr == nil {
 				teamErr = err
 			}
 			continue
+		} else {
+			for _, userId := range teamUsers {
+				granted = append(granted, UserAccess{UserId: userId, CanWrite: team.CanWrite})
+			}
 		}
-		granted = append(granted, team...)
 	}
 
-	for _, user := range users {
-		for _, teamMember := range granted {
-			if user == teamMember {
+	writeRequested := verb == "git-receive-pack"
+
+	for _, userId := range users {
+		for _, grantedTo := range granted {
+			if userId == grantedTo.UserId && (!writeRequested || grantedTo.CanWrite) {
 				return true, teamErr
 			}
 		}
