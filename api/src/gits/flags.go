@@ -19,7 +19,6 @@ func parseFlags() {
 	flag.BoolVar(&config.Verbose, "verbose", true, "Print progress if set")
 	flag.BoolVar(&config.Debug, "debug", false, "Print debug information if set")
 	flag.BoolVar(&config.Trace, "trace", false, "Print detailed trace if set")
-	flag.BoolVar(&config.ZipTrace, "zip_trace", false, "Print detailed debug of S3 ZIP streaming if set")
 
 	flag.StringVar(&config.RepoDir, "repo_dir", "/git", "Base directory for Git repositories")
 	flag.StringVar(&blobsFrom, "blobs", "", "Allowed URL prefixes to fetch repo sources from, empty for no restrictions")

@@ -15,7 +15,6 @@ var (
 	Verbose  bool
 	Debug    bool
 	Trace    bool
-	ZipTrace bool
 
 	RepoDir     string
 	HttpPort    int
