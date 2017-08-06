@@ -36,19 +36,12 @@ func Create(repoId string, archive string) error {
 }
 
 func initBare(dir string) error {
-	gitBinPath, err := exec.LookPath("git")
-	if err != nil {
-		if config.Trace {
-			log.Printf("Git binary lookup: %v; using %s", err, config.GitBinDefault)
-		}
-		gitBinPath = config.GitBinDefault
-	}
 	cmd := exec.Cmd{
-		Path: gitBinPath,
+		Path: gitBinPath(),
 		Dir:  dir,
 		Args: []string{"git", "init", "--bare", "."},
 	}
-	_, err = cmd.Output()
+	_, err := cmd.Output()
 	if err != nil {
 		log.Printf("`git init %s` failed: %v", err)
 		return err
