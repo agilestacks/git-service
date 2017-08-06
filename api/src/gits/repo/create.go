@@ -12,8 +12,6 @@ import (
 	"gits/s3"
 )
 
-var dirMode = os.FileMode(0755)
-
 func Create(repoId string, archive string) error {
 	dir := filepath.Join(config.RepoDir, repoId)
 	_, err := os.Stat(dir)

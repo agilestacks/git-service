@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	GitBinDefault = "/usr/bin/git"
+	GitBinDefault      = "/usr/bin/git"
+	MultipartMaxMemory = 1024 * 1024
 )
 
 var (
