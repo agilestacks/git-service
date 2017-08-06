@@ -3,11 +3,15 @@ package repo
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 
 	"gopkg.in/src-d/go-billy.v3/memfs"
 	"gopkg.in/src-d/go-git.v4"
+	plumbingObject "gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
 
 	"gits/config"
@@ -29,13 +33,13 @@ func Add(repoId string, files []AddFile, commitMessage string) error {
 		progress = nil
 	}
 
-	options := &git.CloneOptions{
+	cloneOptions := &git.CloneOptions{
 		URL:          dir,
 		SingleBranch: true,
 		Depth:        1,
 		Progress:     progress,
 	}
-	clone, err := git.Clone(storer, fs, options)
+	clone, err := git.Clone(storer, fs, cloneOptions)
 	if err != nil {
 		return fmt.Errorf("Unable to clone Git repo `%s`: %v", dir, err)
 	}
@@ -60,7 +64,15 @@ func Add(repoId string, files []AddFile, commitMessage string) error {
 		out.Close()
 		worktree.Add(file.Path)
 	}
-	_, err = worktree.Commit(commitMessage, &git.CommitOptions{})
+
+	commitOptions := git.CommitOptions{
+		Author: &plumbingObject.Signature{
+			Name:  "Automation Hub",
+			Email: "hub@agilestack.com",
+			When:  time.Now(),
+		},
+	}
+	_, err = worktree.Commit(commitMessage, &commitOptions)
 	if err != nil {
 		return err
 	}
@@ -69,6 +81,14 @@ func Add(repoId string, files []AddFile, commitMessage string) error {
 	err = clone.Push(&pushOptions)
 	if err != nil {
 		return err
+	}
+
+	if config.Verbose {
+		added := make([]string, 0, len(files))
+		for _, file := range files {
+			added = append(added, file.Path)
+		}
+		log.Printf("Added `%s` to `%s`", strings.Join(added, ", "), repoId)
 	}
 
 	return nil
