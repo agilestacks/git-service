@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"os"
 	"os/exec"
 	"path/filepath"
 
@@ -13,6 +14,9 @@ func Log(repoId string) ([]byte, error) {
 		Path: gitBinPath(),
 		Dir:  dir,
 		Args: []string{"git", "log"},
+	}
+	if config.Debug {
+		cmd.Stderr = os.Stdout
 	}
 	return cmd.Output()
 }
