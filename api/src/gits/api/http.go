@@ -107,7 +107,7 @@ func parsePath(urlPath string) (string, string, string, error) {
 	if !strings.HasPrefix(urlPath, apiRepoHandlerPath) || len(urlPath) < len(apiRepoHandlerPath)+2 {
 		return "", "", "", fmt.Errorf("Request path must start with `%s`", apiRepoHandlerPath)
 	}
-	urlPath = urlPath[len(apiRepoHandlerPath)+1:]
+	urlPath = urlPath[len(apiRepoHandlerPath):]
 	if len(urlPath) < 3 {
 		return "", "", "", fmt.Errorf("Unable to parse request from %q", urlPath)
 	}
