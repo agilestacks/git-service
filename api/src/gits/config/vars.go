@@ -12,9 +12,9 @@ const (
 )
 
 var (
-	Verbose  bool
-	Debug    bool
-	Trace    bool
+	Verbose bool
+	Debug   bool
+	Trace   bool
 
 	RepoDir     string
 	HttpPort    int
