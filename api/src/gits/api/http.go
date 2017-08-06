@@ -35,7 +35,7 @@ func listen(server *http.Server) {
 func writeError(w http.ResponseWriter, status int, message string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
-	json := fmt.Sprintf("{ \"error\": \"%s\" }", message)
+	json := fmt.Sprintf("{ \"error\": \"%s\" }", strings.Replace(message, "\"", "\\\"", -1))
 	io.WriteString(w, json)
 }
 
