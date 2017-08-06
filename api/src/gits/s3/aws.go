@@ -43,7 +43,7 @@ func awsCredentials(profile string) *awscredentials.Credentials {
 	return awscredentials.NewCredentials(&awscredentials.ChainProvider{Providers: providers, VerboseErrors: config.Verbose})
 }
 
-func openArchive(archive string) (io.ReadCloser, error) {
+func openUrl(archive string) (io.ReadCloser, error) {
 	location, err := url.Parse(archive)
 	if err != nil {
 		return nil, err
