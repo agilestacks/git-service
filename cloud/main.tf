@@ -13,4 +13,3 @@ module "ecr" {
   source = "github.com/agilestacks/terraform-modules//ecr"
   name   = "agilestacks/${var.name}/git-service"
 }
-

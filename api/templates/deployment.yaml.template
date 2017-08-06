@@ -27,4 +27,3 @@ spec:
           containerPort: 8005
         - name: ssh
           containerPort: 2022
-          

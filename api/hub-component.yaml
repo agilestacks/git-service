@@ -20,6 +20,8 @@ parameters:
     env:  IMAGE
   - name: service
     default: git
+  - name: sharedsecret.base64Encoded
+  - name: privatekey.base64Encoded
 - name: dns.domain
   brief: DNS domain
   kind: tech
