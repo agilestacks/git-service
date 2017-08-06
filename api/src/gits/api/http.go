@@ -1,13 +1,11 @@
 package api
 
 import (
-	//"bytes"
-	//"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
-	//"net/url"
+	"regexp"
 	"strings"
 	"time"
 
@@ -99,7 +97,7 @@ func repositoriesRouter(w http.ResponseWriter, req *http.Request) {
 
 	if !handled {
 		if config.Verbose {
-			log.Printf("HTTP %q request on repo %q; verb %q; path %q not allowed", req.Method, repoId, verb, path)
+			log.Printf("Cannot route HTTP %q request on repo %q; verb %q; path %q", req.Method, repoId, verb, path)
 		}
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
@@ -122,25 +120,12 @@ func parsePath(urlPath string) (string, string, string, error) {
 		parts = append(parts, "")
 	}
 
-	return parts[0] + "/" + parts[1], parts[2], parts[3], nil
+	return fmt.Sprintf("%s/%s", sanitize(parts[0]), sanitize(parts[1])),
+		parts[2], parts[3], nil
 }
 
-func sendRepoLog(repoId string, w http.ResponseWriter) {
-	w.WriteHeader(http.StatusOK)
-}
+var alphaNum = regexp.MustCompile("[^a-z0-9-]+")
 
-func createRepo(repoId string, bodyReader io.ReadCloser, w http.ResponseWriter) {
-	w.WriteHeader(http.StatusOK)
-}
-
-func uploadFile(repoId string, path string, req *http.Request, w http.ResponseWriter) {
-	w.WriteHeader(http.StatusOK)
-}
-
-func uploadFiles(repoId string, req *http.Request, w http.ResponseWriter) {
-	w.WriteHeader(http.StatusOK)
-}
-
-func deleteRepo(repoId string, w http.ResponseWriter) {
-	w.WriteHeader(http.StatusOK)
+func sanitize(name string) string {
+	return alphaNum.ReplaceAllString(name, "-")
 }

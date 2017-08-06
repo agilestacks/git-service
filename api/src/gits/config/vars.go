@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+const (
+	GitBinDefault = "/usr/bin/git"
+)
+
 var (
 	Verbose  bool
 	Debug    bool
@@ -25,6 +29,10 @@ var (
 	AuthApiSecret   string
 	HubApiEndpoint  string
 	AuthApiEndpoint string
+
+	AwsRegion                string
+	AwsProfile               string
+	AwsUseIamRoleCredentials bool
 )
 
 func Update() {

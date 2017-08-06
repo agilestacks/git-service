@@ -11,10 +11,6 @@ import (
 	"gits/config"
 )
 
-const (
-	gitBinDefault = "/usr/bin/git"
-)
-
 func GitServer(command string, stdin io.Reader, stdout io.Writer, stderr io.Writer, users []string) (*exec.Cmd, error) {
 	if config.Debug {
 		log.Printf("Git command requested: %q", command)
@@ -57,9 +53,9 @@ func GitServer(command string, stdin io.Reader, stdout io.Writer, stderr io.Writ
 	gitBinPath, err := exec.LookPath(verb)
 	if err != nil {
 		if config.Trace {
-			log.Printf("Git binary lookup for %s: %v; using %s", verb, err, gitBinDefault)
+			log.Printf("Git binary lookup for %s: %v; using %s", verb, err, config.GitBinDefault)
 		}
-		gitBinPath = gitBinDefault
+		gitBinPath = config.GitBinDefault
 	}
 
 	cmd := exec.Cmd{
