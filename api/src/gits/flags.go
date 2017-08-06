@@ -41,8 +41,8 @@ func parseFlags() {
 	flag.StringVar(&config.AuthApiEndpoint, "auth_api", "", "Auth Service HTTP API endpoint (overrides -auth_api_*_env / AUTH_SERVICE_*)")
 
 	flag.StringVar(&config.AwsRegion, "aws_region", "", "The source archive bucket AWS region")
-	flag.StringVar(&config.AwsProfile, "aws_profile", "", "The AWS credentials profile in ~/.aws/credentials")
-	flag.BoolVar(&config.AwsUseIamRoleCredentials, "aws_use_iam_role_credentials", true, "Also search for EC2 instance credentials")
+	flag.StringVar(&config.AwsProfile, "aws_profile", "", "The AWS credentials profile of ~/.aws/credentials")
+	flag.BoolVar(&config.AwsUseIamRoleCredentials, "aws_use_iam_role_credentials", true, "Try EC2 instance credentials")
 
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr,
