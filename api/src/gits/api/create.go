@@ -42,8 +42,8 @@ func createRepo(repoId string, bodyReader io.Reader, w http.ResponseWriter) {
 		status := http.StatusInternalServerError
 		if strings.Contains(err.Error(), "exist") {
 			status = http.StatusConflict
-        } else if strings.Contains(err.Error(), "not supported") {
-            status = http.StatusBadRequest
+		} else if strings.Contains(err.Error(), "not supported") {
+			status = http.StatusBadRequest
 		} else if strings.Contains(err.Error(), "S3") {
 			status = http.StatusGatewayTimeout
 		}

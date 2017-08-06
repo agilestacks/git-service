@@ -11,7 +11,7 @@ func Unarchive(dir string, archive string) error {
 	if err != nil {
 		return err
 	}
-    defer stream.Close()
+	defer stream.Close()
 	return unarchiveStream(dir, stream)
 }
 
