@@ -1,6 +1,7 @@
 package api
 
 import (
+	"compress/gzip"
 	"fmt"
 	"io"
 	"log"
@@ -14,11 +15,13 @@ import (
 
 const (
 	apiRepoHandlerPath = "/api/v1/repositories/"
+	gitHandlerPath     = "/repo/"
 )
 
 func Listen(host string, port int) {
 	mux := http.NewServeMux()
-	mux.HandleFunc(apiRepoHandlerPath, repositoriesRouter)
+	mux.HandleFunc(apiRepoHandlerPath, apiRepositoriesRouter)
+	mux.HandleFunc(gitHandlerPath, gitRouter)
 	server := &http.Server{
 		Addr:         fmt.Sprintf("%s:%d", host, port),
 		Handler:      mux,
@@ -39,16 +42,12 @@ func writeError(w http.ResponseWriter, status int, message string) {
 	io.WriteString(w, json)
 }
 
-func repositoriesRouter(w http.ResponseWriter, req *http.Request) {
-	if config.GitApiSecret != "" {
-		secret := req.Header.Get("X-API-Secret")
-		if secret != config.GitApiSecret {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
+func apiRepositoriesRouter(w http.ResponseWriter, req *http.Request) {
+	if !rightApiSecret(w, req) {
+		return
 	}
 
-	repoId, verb, path, err := parsePath(req.URL.Path)
+	repoId, verb, path, err := parsePath(req.URL.Path, apiRepoHandlerPath)
 	if err != nil {
 		message := fmt.Sprintf("Error parsing request path %q: %v", req.URL.Path, err)
 		if config.Verbose {
@@ -103,11 +102,77 @@ func repositoriesRouter(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func parsePath(urlPath string) (string, string, string, error) {
-	if !strings.HasPrefix(urlPath, apiRepoHandlerPath) || len(urlPath) < len(apiRepoHandlerPath)+2 {
-		return "", "", "", fmt.Errorf("Request path must start with `%s`", apiRepoHandlerPath)
+func gitRouter(w http.ResponseWriter, req *http.Request) {
+	if !rightApiSecret(w, req) {
+		return
 	}
-	urlPath = urlPath[len(apiRepoHandlerPath):]
+
+	repoId, verb, path, err := parsePath(req.URL.Path, gitHandlerPath)
+	if err != nil {
+		message := fmt.Sprintf("Error parsing request path %q: %v", req.URL.Path, err)
+		if config.Verbose {
+			log.Print(message)
+		}
+		writeError(w, http.StatusBadRequest, message)
+		return
+	}
+
+	handled := false
+	switch req.Method {
+
+	default:
+		break
+
+	case "GET":
+		service := req.URL.Query().Get("service")
+		if verb == "info" && path == "refs" && service == "git-upload-pack" {
+			sendRefsInfo(repoId, w)
+			handled = true
+		}
+		break
+
+	case "POST":
+		if verb == "git-upload-pack" {
+			in := req.Body
+			if req.Header.Get("Content-Encoding") == "gzip" {
+				in, err = gzip.NewReader(in)
+				if err != nil {
+					log.Printf("Unable to decompress request: %v", err)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+			}
+			sendRefsPack(repoId, w, in)
+			in.Close()
+			handled = true
+		}
+		break
+	}
+
+	if !handled {
+		if config.Verbose {
+			log.Printf("Cannot route HTTP %q request on repo %q; verb %q; path %q", req.Method, repoId, verb, path)
+		}
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+}
+
+func rightApiSecret(w http.ResponseWriter, req *http.Request) bool {
+	if config.GitApiSecret != "" {
+		secret := req.Header.Get("X-API-Secret")
+		if secret != config.GitApiSecret {
+			w.WriteHeader(http.StatusUnauthorized)
+			return false
+		}
+	}
+	return true
+}
+
+func parsePath(urlPath string, prefixMust string) (string, string, string, error) {
+	if !strings.HasPrefix(urlPath, prefixMust) || len(urlPath) < len(prefixMust)+2 {
+		return "", "", "", fmt.Errorf("Request path must start with `%s`", prefixMust)
+	}
+	urlPath = urlPath[len(prefixMust):]
 	if len(urlPath) < 3 {
 		return "", "", "", fmt.Errorf("Unable to parse request from %q", urlPath)
 	}
@@ -120,8 +185,12 @@ func parsePath(urlPath string) (string, string, string, error) {
 		parts = append(parts, "")
 	}
 
-	return fmt.Sprintf("%s/%s", sanitize(parts[0]), sanitize(parts[1])),
-		parts[2], parts[3], nil
+	org := sanitize(parts[0])
+	name := sanitize(strings.TrimSuffix(parts[1], ".git"))
+	verb := parts[2]
+	path := parts[3]
+
+	return fmt.Sprintf("%s/%s", org, name), verb, path, nil
 }
 
 var alphaNum = regexp.MustCompile("[^a-z0-9-]+")

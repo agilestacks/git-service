@@ -11,10 +11,14 @@ import (
 var dirMode = os.FileMode(0755)
 
 func gitBinPath() string {
-	path, err := exec.LookPath("git")
+	return gitSubCommandBinPath("git")
+}
+
+func gitSubCommandBinPath(command string) string {
+	path, err := exec.LookPath(command)
 	if err != nil {
 		if config.Trace {
-			log.Printf("Git binary lookup: %v; using %s", err, config.GitBinDefault)
+			log.Printf("Git binary `%s` lookup: %v; using %s", command, err, config.GitBinDefault)
 		}
 		path = config.GitBinDefault
 	}

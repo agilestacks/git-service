@@ -1,0 +1,57 @@
+package api
+
+import (
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"strconv"
+	"strings"
+
+	"gits/config"
+	"gits/repo"
+)
+
+func sendRefsInfo(repoId string, w http.ResponseWriter) {
+	if config.Verbose {
+		log.Printf("Sending repo `%s` refs", repoId)
+	}
+
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Content-Type", "application/x-git-upload-pack-advertisement")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(gitRpcPacket("# service=git-upload-pack\n")))
+	w.Write([]byte("0000"))
+
+	err := repo.InfoPack(repoId, w)
+	if err != nil {
+		message := fmt.Sprintf("Unable to send Git repo `%s` refs: %v", repoId, err)
+		log.Print(message)
+		strings.NewReader(message).WriteTo(w)
+	}
+}
+
+func gitRpcPacket(str string) string {
+	s := strconv.FormatInt(int64(len(str)+4), 16)
+	off := len(s) % 4
+	if off != 0 {
+		s = strings.Repeat("0", 4-off) + s
+	}
+	return s + str
+}
+
+func sendRefsPack(repoId string, w http.ResponseWriter, in io.Reader) {
+	if config.Verbose {
+		log.Printf("Sending repo `%s` pack", repoId)
+	}
+
+	w.Header().Set("Content-Type", "application/x-git-upload-pack-result")
+	w.WriteHeader(http.StatusOK)
+
+	err := repo.RefsPack(repoId, w, in)
+	if err != nil {
+		message := fmt.Sprintf("Unable to send Git repo `%s` pack: %v", repoId, err)
+		log.Print(message)
+		strings.NewReader(message).WriteTo(w)
+	}
+}
