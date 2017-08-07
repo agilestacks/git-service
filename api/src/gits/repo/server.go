@@ -11,6 +11,8 @@ import (
 	"gits/config"
 )
 
+/* https://github.com/go-gitea/gitea/blob/HEAD/cmd/serv.go */
+
 func GitServer(command string, stdin io.Reader, stdout io.Writer, stderr io.Writer, users []string) (*exec.Cmd, error) {
 	if config.Debug {
 		log.Printf("Git command requested: %q", command)

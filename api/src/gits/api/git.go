@@ -12,6 +12,10 @@ import (
 	"gits/repo"
 )
 
+/* https://github.com/git/git/blob/master/Documentation/technical/http-protocol.txt
+   https://git-scm.com/book/en/v2/Git-Internals-Transfer-Protocols
+   https://github.com/go-gitea/gitea/blob/HEAD/routers/repo/http.go */
+
 func sendRefsInfo(repoId string, w http.ResponseWriter) {
 	if config.Verbose {
 		log.Printf("Sending repo `%s` refs", repoId)
