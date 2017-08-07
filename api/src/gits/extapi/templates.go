@@ -67,7 +67,7 @@ func TemplateById(templateId string) (*Template, error) {
 	teams := make([]TeamAccess, 0, len(template.Teams))
 	for _, team := range template.Teams {
 		canWrite := false
-		if team.Role == "ADMIN" || team.Role == "RW" {
+		if team.Role == "admin" || team.Role == "write" {
 			canWrite = true
 		}
 		teams = append(teams, TeamAccess{TeamId: team.Id, CanWrite: canWrite})
