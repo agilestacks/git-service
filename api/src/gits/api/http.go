@@ -196,5 +196,5 @@ func parsePath(urlPath string, prefixMust string) (string, string, string, error
 var alphaNum = regexp.MustCompile("[^a-z0-9-]+")
 
 func sanitize(name string) string {
-	return alphaNum.ReplaceAllString(name, "-")
+	return alphaNum.ReplaceAllString(strings.ToLower(name), "-")
 }
