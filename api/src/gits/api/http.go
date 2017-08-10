@@ -158,14 +158,25 @@ func gitRouter(w http.ResponseWriter, req *http.Request) {
 }
 
 func rightApiSecret(w http.ResponseWriter, req *http.Request) bool {
-	if config.GitApiSecret != "" {
-		secret := req.Header.Get("X-API-Secret")
-		if secret != config.GitApiSecret {
-			w.WriteHeader(http.StatusUnauthorized)
-			return false
+	if config.GitApiSecret == "" {
+		return true
+	}
+	if req.Header.Get("X-API-Secret") == config.GitApiSecret {
+		return true
+	}
+	// for git clone http://
+	user := req.URL.User
+	if user != nil {
+		if user.Username() == config.GitApiSecret {
+			return true
+		}
+		password, set := user.Password()
+		if set && password == config.GitApiSecret {
+			return true
 		}
 	}
-	return true
+	w.WriteHeader(http.StatusUnauthorized)
+	return false
 }
 
 func parsePath(urlPath string, prefixMust string) (string, string, string, error) {
