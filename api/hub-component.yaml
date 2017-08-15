@@ -11,6 +11,8 @@ requires:
 - kubernetes
 
 parameters:
+- name: component.automation-hub.endpoint
+- name: component.auth-service.endpoint
 - name: component.git-service
   parameters:
   - name: namespace
@@ -20,8 +22,14 @@ parameters:
     env:  IMAGE
   - name: service
     default: git
-  - name: sharedsecret.base64Encoded
+  - name: gitApiSecret.base64Encoded
+    kind: user
+  - name: hubApiSecret.base64Encoded
+    kind: user
+  - name: authApiSecret.base64Encoded
+    kind: user
   - name: privatekey.base64Encoded
+    kind: user
 - name: dns.domain
   brief: DNS domain
   kind: tech
@@ -35,4 +43,4 @@ templates:
 outputs:
 - name: component.git-service.endpoint
   brief: Git service API endpoint
-  value: http://git-service.app.${dns.domain}
+  value: http://${component.git-service.service}.${component.git-service.namespace}.svc.cluster.local/api/v1

@@ -22,6 +22,23 @@ spec:
       - name: git-service
         image: ${component.git-service.image}
         imagePullPolicy: Always
+        env:
+        - name: HUB_SERVICE_ENDPOINT
+          value: ${component.automation-hub.endpoint}
+        - name: AUTH_SERVICE_ENDPOINT
+          value: ${component.automation-auth.endpoint}
+        - name: GIT_API_SECRET
+          secretKeyRef:
+            name: gits-secrets
+            key:  git-api-secret
+        - name: HUB_API_SECRET
+          secretKeyRef:
+            name: gits-secrets
+            key:  hub-api-secret
+        - name: AUTH_API_SECRET
+          secretKeyRef:
+            name: gits-secrets
+            key:  auth-api-secret
         ports:
         - name: http
           containerPort: 8005
