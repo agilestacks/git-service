@@ -13,8 +13,8 @@ import (
 func parseFlags() {
 	var blobsFrom string
 	var apiSecretEnvVar, hubApiSecretEnvVar, authApiSecretEnvVar string
-	var hubApiEndpoint, hubApiHostEnvVar, hubApiPortEnvVar string
-	var authApiEndpoint, authApiHostEnvVar, authApiPortEnvVar string
+	var hubApiEndpoint, hubApiEndpointEnvVar, hubApiHostEnvVar, hubApiPortEnvVar string
+	var authApiEndpoint, authApiEndpointEnvVar, authApiHostEnvVar, authApiPortEnvVar string
 
 	flag.BoolVar(&config.Verbose, "verbose", true, "Print progress if set")
 	flag.BoolVar(&config.Debug, "debug", false, "Print debug information if set")
@@ -31,13 +31,15 @@ func parseFlags() {
 	flag.StringVar(&authApiSecretEnvVar, "auth_api_secret_env", "AUTH_API_SECRET", "Environment variable to get secret for Auth Service HTTP API")
 
 	flag.BoolVar(&config.NoExtApiCalls, "no_ext_api_calls", false, "Emulate external calls to Automation Hub and Auth Service with internal stubs")
+	flag.StringVar(&hubApiEndpointEnvVar, "hub_api_endpoint_env", "HUB_SERVICE_ENDPOINT", "Environment variable to get Automation Hub HTTP API endpoint")
 	flag.StringVar(&hubApiHostEnvVar, "hub_api_host_env", "HUB_SERVICE_HOST", "Environment variable to get Automation Hub HTTP API hostname / IP")
 	flag.StringVar(&hubApiPortEnvVar, "hub_api_port_env", "HUB_SERVICE_PORT", "Environment variable to get Automation Hub HTTP API port")
+	flag.StringVar(&authApiEndpointEnvVar, "auth_api_endpoint_env", "AUTH_SERVICE_ENDPOINT", "Environment variable to get Auth Service HTTP API endpoint")
 	flag.StringVar(&authApiHostEnvVar, "auth_api_host_env", "AUTH_SERVICE_HOST", "Environment variable to get Auth Service HTTP API hostname / IP")
 	flag.StringVar(&authApiPortEnvVar, "auth_api_port_env", "AUTH_SERVICE_PORT", "Environment variable to get Auth Service HTTP API port")
 
-	flag.StringVar(&config.HubApiEndpoint, "hub_api", "", "Automation Hub HTTP API endpoint (overrides -hub_api_*_env / HUB_SERVICE_*)")
-	flag.StringVar(&config.AuthApiEndpoint, "auth_api", "", "Auth Service HTTP API endpoint (overrides -auth_api_*_env / AUTH_SERVICE_*)")
+	flag.StringVar(&hubApiEndpoint, "hub_api_endpoint", "", "Automation Hub HTTP API endpoint (overrides -hub_api_*_env / HUB_SERVICE_*)")
+	flag.StringVar(&authApiEndpoint, "auth_api_endpoint", "", "Auth Service HTTP API endpoint (overrides -auth_api_*_env / AUTH_SERVICE_*)")
 
 	flag.StringVar(&config.AwsRegion, "aws_region", "", "The source archive bucket AWS region")
 	flag.StringVar(&config.AwsProfile, "aws_profile", "", "The AWS credentials profile of ~/.aws/credentials")
@@ -46,7 +48,7 @@ func parseFlags() {
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr,
 			`Usage:
-  gits -verbose -repo_dir /git -http_port 80 -ssh_port 22 -blobsFrom s3://agilestacks/
+  gits -verbose -repo_dir /git -http_port 80 -ssh_port 22 -blobsFrom s3://agilestacks-distribution/ -aws_region us-east-2
 
   If no -blobsFrom is set then any supported URL is allowed, currently s3://
   If -api_secret_env is empty or env variable exist but is empty then HTTP API is open - no access control.
@@ -63,8 +65,8 @@ Flags:
 		config.HubApiSecret = lookupEnv(hubApiSecretEnvVar, "hub_api_secret_env")
 		config.AuthApiSecret = lookupEnv(authApiSecretEnvVar, "auth_api_secret_env")
 
-		config.HubApiEndpoint = lookupEndpoint(hubApiEndpoint, hubApiHostEnvVar, hubApiPortEnvVar, "hub")
-		config.AuthApiEndpoint = lookupEndpoint(authApiEndpoint, authApiHostEnvVar, authApiPortEnvVar, "auth")
+		config.HubApiEndpoint = lookupEndpoint(hubApiEndpoint, hubApiEndpointEnvVar, hubApiHostEnvVar, hubApiPortEnvVar, "hub")
+		config.AuthApiEndpoint = lookupEndpoint(authApiEndpoint, authApiEndpointEnvVar, authApiHostEnvVar, authApiPortEnvVar, "auth")
 	}
 
 	if blobsFrom != "" {
@@ -86,14 +88,23 @@ func lookupEnv(envVar string, param string) string {
 	return value
 }
 
-func lookupEndpoint(endpoint string, hostEnv string, portEnv string, param string) string {
+func lookupEndpoint(endpoint string, endpointEnv string, hostEnv string, portEnv string, param string) string {
 	if endpoint != "" {
 		return endpoint
 	}
 
-	if hostEnv == "" {
-		log.Fatal("-hub_api_host_env or -hub_api must be set")
+	if hostEnv == "" && endpointEnv == "" {
+		log.Fatalf("One of -%[1]s_api_endpoint, -%[1]s_api_endpoint_env, -%[1]s_api_host_env must be set", param)
 	}
+
+	if endpointEnv != "" {
+		endpoint, exist := os.LookupEnv(endpointEnv)
+		if !exist || endpoint == "" {
+			log.Fatalf("-%s_api_endpoint_env %s env var must point to API endpoint", param, endpointEnv)
+		}
+		return endpoint
+	}
+
 	host, exist := os.LookupEnv(hostEnv)
 	if !exist || host == "" {
 		log.Fatalf("-%s_api_host_env %s env var must point to API host", param, hostEnv)
