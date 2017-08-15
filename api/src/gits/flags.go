@@ -93,40 +93,36 @@ func lookupEndpoint(endpoint string, endpointEnv string, hostEnv string, portEnv
 		return endpoint
 	}
 
-	if hostEnv == "" && endpointEnv == "" {
-		log.Fatalf("One of -%[1]s_api_endpoint, -%[1]s_api_endpoint_env, -%[1]s_api_host_env must be set", param)
-	}
-
 	if endpointEnv != "" {
-		endpoint, exist := os.LookupEnv(endpointEnv)
-		if !exist || endpoint == "" {
-			log.Fatalf("-%s_api_endpoint_env %s env var must point to API endpoint", param, endpointEnv)
-		}
-		return endpoint
-	}
-
-	host, exist := os.LookupEnv(hostEnv)
-	if !exist || host == "" {
-		log.Fatalf("-%s_api_host_env %s env var must point to API host", param, hostEnv)
-	}
-
-	port := "80"
-	if portEnv != "" {
-		port, exist := os.LookupEnv(portEnv)
-		if !exist || port == "" {
-			log.Fatalf("-%s_api_port_env %s env var must point to API port", param, hostEnv)
+		endpoint, _ := os.LookupEnv(endpointEnv)
+		if endpoint != "" {
+			return endpoint
 		}
 	}
 
-	proto := "http"
-	if port == "443" {
-		proto = "https"
-	}
-	if port == "80" || port == "443" {
-		port = ""
-	} else {
-		port = ":" + port
+	if hostEnv != "" {
+		host, _ := os.LookupEnv(hostEnv)
+		if host != "" {
+			port := "80"
+			if portEnv != "" {
+				port, exist := os.LookupEnv(portEnv)
+				if !exist || port == "" {
+					log.Fatalf("-%s_api_port_env %s env var must point to API port", param, hostEnv)
+				}
+			}
+			proto := "http"
+			if port == "443" {
+				proto = "https"
+			}
+			if port == "80" || port == "443" {
+				port = ""
+			} else {
+				port = ":" + port
+			}
+			return fmt.Sprintf("%s://%s%s", proto, host, port)
+		}
 	}
 
-	return fmt.Sprintf("%s://%s%s", proto, host, port)
+	log.Fatalf("One of -%[1]s_api_endpoint, -%[1]s_api_endpoint_env, -%[1]s_api_host_env must be set", param)
+	return ""
 }
