@@ -26,7 +26,7 @@ func Listen(host string, port int) {
 		Addr:         fmt.Sprintf("%s:%d", host, port),
 		Handler:      mux,
 		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		WriteTimeout: 30 * time.Second,
 	}
 	go listen(server)
 }
