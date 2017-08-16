@@ -22,11 +22,18 @@ govendor:
 	@cd src/gits && $(GOBIN)/govendor sync
 
 compile: govendor
-	@$(GOBIN)/gox -rebuild -osarch="darwin/amd64 linux/amd64" -output=$(GOPATH)/bin/{{.OS}}/{{.Dir}} gits/...
+	@$(GOBIN)/gox -rebuild \
+		-osarch="darwin/amd64 linux/amd64" \
+		-output=$(GOPATH)/bin/{{.OS}}/{{.Dir}} gits/...
 
 run:
-	go get gits && \
-		$(GOBIN)/gits -api_secret_env '' -no_ext_api_calls -repo_dir /tmp/gits -aws_region us-east-2 -aws_profile agilestacks -debug
+	go get gits && $(GOBIN)/gits \
+		-api_secret_env '' \
+		-no_ext_api_calls \
+		-repo_dir /tmp/gits \
+		-aws_region us-east-2 \
+		-aws_profile agilestacks \
+		-debug
 
 fmt:
 	@go fmt gits gits/api gits/config gits/repo gits/s3 gits/ssh
