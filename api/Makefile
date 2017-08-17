@@ -61,6 +61,8 @@ push:
 	
 deploy: install compile build push
 	$(kubectl) apply -f templates/namespace.yaml
+	$(kubectl) apply -f templates/volume.yaml	
+	$(kubectl) apply -f templates/pvc.yaml	
 	$(kubectl) apply -f templates/secret.yaml	
 	$(kubectl) apply -f templates/service.yaml
 	$(kubectl) apply -f templates/deployment.yaml
@@ -68,6 +70,8 @@ deploy: install compile build push
 
 undeploy:
 	$(kubectl) delete -f templates/deployment.yaml | true
+	$(kubectl) apply -f templates/pvc.yaml	       | true
+	$(kubectl) apply -f templates/volume.yaml	     | true
 	$(kubectl) delete -f templates/service.yaml    | true
 	$(kubectl) delete -f templates/secret.yaml     | true	
 .PHONY: undeploy

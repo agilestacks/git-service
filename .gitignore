@@ -1,5 +1,2 @@
-rev.txt
-api/templates/deployment.yaml
-api/templates/namespace.yaml
-api/templates/secret.yaml
-api/templates/service.yaml
+api/templates/*
+!api/templates/*.template

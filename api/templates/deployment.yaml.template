@@ -42,8 +42,27 @@ spec:
             secretKeyRef:
               name: gits-secrets
               key:  auth-api-secret
+        args:
+        - "-aws_region"
+        - "${component.git-service.bucket.region}"
+        - "-http_port"
+        - "8005"
+        - "-ssh_port"
+        - "2022"
+        - "-repo_dir"
+        - "/git"
+        - "-trace"
+        - "-debug"
         ports:
         - name: http
           containerPort: 8005
         - name: ssh
           containerPort: 2022
+        volumeMounts:
+        - name: git-repo
+          mountPath: /git
+          readOnly: false
+      volumes:
+      - name: git-repo
+        persistentVolumeClaim:
+          claimName: git-repo

@@ -14,8 +14,16 @@ spec:
     port: 80
     targetPort: 8005
     protocol: TCP
+  - name: http2
+    port: 8005
+    targetPort: 8005
+    protocol: TCP
   - name: ssh
     port: 22
+    targetPort: 2022
+    protocol: TCP
+  - name: ssh2
+    port: 2022
     targetPort: 2022
     protocol: TCP
   selector:

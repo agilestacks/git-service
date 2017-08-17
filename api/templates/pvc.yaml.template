@@ -1,0 +1,20 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: git-repo
+  namespace: "${component.git-service.namespace}"
+  labels:
+    provider:  agilestacks.com
+    project:   git-service
+    qualifier: git-repo
+spec:
+  selector:
+    matchLabels:
+      provider:  agilestacks.com
+      project:   git-service
+      qualifier: git-repo
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: "${component.git-service.volume.size}"

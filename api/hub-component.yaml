@@ -30,6 +30,13 @@ parameters:
     kind: user
   - name: privatekey.base64Encoded
     kind: user
+  - name: volume.size
+    default: 100Gi
+  - name: volume.path
+    default: /mnt/nfs/gits/vol-00
+  - name: bucket.region
+    default: us-east-1
+    
 - name: dns.domain
   brief: DNS domain
   kind: tech
