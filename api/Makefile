@@ -52,7 +52,7 @@ build:
 	@docker run --rm \
 		-v "$(GOPATH)/src/gits":/usr/local/go/src/gits \
 		-v "$(GOPATH)/bin/linux":/linuxbuild \
-		-u `stat -c "%u:%g" $(GOPATH)/bin/linux` \
+		-u $(shell id -u) \
 		golang:1.8-alpine go build -o /linuxbuild/gits-musl -v gits
 	@docker build -t $(IMAGE):$(IMAGE_VERSION) .
 .PHONY: build
