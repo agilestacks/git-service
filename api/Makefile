@@ -49,6 +49,11 @@ clean:
 	@find src -not -path "*src/gits*" -not -path "src" -type d -maxdepth 1 | xargs rm -rf
 
 build:
+	@docker run --rm \
+		-v "$(GOPATH)/src/gits":/usr/local/go/src/gits \
+		-v "$(GOPATH)/bin/linux":/linuxbuild \
+		-u `stat -c "%u:%g" $(GOPATH)/bin/linux` \
+		golang:1.8-alpine go build -o /linuxbuild/gits-musl -v gits
 	@docker build -t $(IMAGE):$(IMAGE_VERSION) .
 .PHONY: build
 
@@ -59,7 +64,7 @@ push:
 	docker push $(IMAGE):latest
 .PHONY: push
 	
-deploy: install compile build push
+deploy: install build push
 	$(kubectl) apply -f templates/namespace.yaml
 	$(kubectl) apply -f templates/volume.yaml	
 	$(kubectl) apply -f templates/pvc.yaml	

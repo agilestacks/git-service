@@ -7,7 +7,7 @@ ENV HUB_SERVICE_ENDPOINT "*** unset ***"
 ENV AUTH_SERVICE_ENDPOINT "*** unset ***"
 ENV BUCKET "terraform.agilestacks.com"
 
-COPY bin/linux/gits /gits
+COPY bin/linux/gits-musl /gits
 ADD  https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant /gits-key
 
 VOLUME /git
