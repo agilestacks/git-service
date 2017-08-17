@@ -35,7 +35,9 @@ parameters:
   - name: volume.path
     default: /mnt/nfs/gits/vol-00
   - name: bucket.region
-    default: us-east-1
+    default: us-east-2
+  - name: bucket.name
+    default: agilestacks-distribution
     
 - name: dns.domain
   brief: DNS domain

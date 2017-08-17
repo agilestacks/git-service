@@ -53,6 +53,8 @@ spec:
         - "/git"
         - "-trace"
         - "-debug"
+        - "-blobsFrom" 
+        - "s3://${component.git-service.bucket.name}/"
         ports:
         - name: http
           containerPort: 8005
