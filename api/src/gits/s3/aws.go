@@ -3,6 +3,7 @@ package s3
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/url"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -23,7 +24,11 @@ func Init() {
 		awsConfig = awsConfig.WithRegion(config.AwsRegion)
 	}
 	awsConfig = awsConfig.WithCredentials(awsCredentials(config.AwsProfile))
-	S3 = awss3.New(awssession.New(), awsConfig)
+	session, err := awssession.NewSession(awsConfig)
+	if err != nil {
+		log.Fatalf("Error initializing AWS session: %v", err)
+	}
+	S3 = awss3.New(session)
 }
 
 func awsCredentials(profile string) *awscredentials.Credentials {
