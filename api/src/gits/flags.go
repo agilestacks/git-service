@@ -48,9 +48,9 @@ func parseFlags() {
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr,
 			`Usage:
-  gits -verbose -repo_dir /git -http_port 80 -ssh_port 22 -blobsFrom s3://agilestacks-distribution/ -aws_region us-east-2
+  gits -verbose -repo_dir /git -http_port 80 -ssh_port 22 -blobs s3://agilestacks-distribution/ -aws_region us-east-2
 
-  If no -blobsFrom is set then any supported URL is allowed, currently s3://
+  If no -blobs is set then any supported URL is allowed, currently s3://
   If -api_secret_env is empty or env variable exist but is empty then HTTP API is open - no access control.
 
 Flags:
