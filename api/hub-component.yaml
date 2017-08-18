@@ -22,11 +22,11 @@ parameters:
     env:  IMAGE
   - name: service
     default: git
-  - name: gitApiSecret.base64Encoded
+  - name: gitApiSecret
     kind: user
-  - name: hubApiSecret.base64Encoded
+  - name: hubApiSecret
     kind: user
-  - name: authApiSecret.base64Encoded
+  - name: authApiSecret
     kind: user
   - name: privatekey.base64Encoded
     kind: user

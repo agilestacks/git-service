@@ -23,6 +23,8 @@ spec:
         image: ${component.git-service.image}
         imagePullPolicy: Always
         env:
+        - name: AWS_DEFAULT_REGION
+          value: "${component.git-service.bucket.region}"
         - name: HUB_SERVICE_ENDPOINT
           value: ${component.automation-hub.endpoint}
         - name: AUTH_SERVICE_ENDPOINT
