@@ -22,9 +22,7 @@ func Init() {
 	if config.AwsRegion != "" {
 		awsConfig = awsConfig.WithRegion(config.AwsRegion)
 	}
-	if config.AwsProfile != "" {
-		awsConfig = awsConfig.WithCredentials(awsCredentials(config.AwsProfile))
-	}
+	awsConfig = awsConfig.WithCredentials(awsCredentials(config.AwsProfile))
 	S3 = awss3.New(awssession.New(), awsConfig)
 }
 
