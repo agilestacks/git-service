@@ -7,12 +7,12 @@ ENV HUB_SERVICE_ENDPOINT "*** unset ***"
 ENV AUTH_SERVICE_ENDPOINT "*** unset ***"
 ENV BUCKET "terraform.agilestacks.com"
 
-COPY bin/linux/gits-musl /gits
+COPY bin/linux/gits-musl /bin/gits
 ADD  https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant /gits-key
 
 VOLUME /git
 
-RUN chmod +x /gits && \
+RUN chmod +x /bin/gits && \
     chmod 600 /gits-key && \
     apk add --update git openssh && \
     rm /var/cache/apk/*
@@ -20,5 +20,5 @@ RUN chmod +x /gits && \
 EXPOSE 2022
 EXPOSE 8005
 
-ENTRYPOINT "/gits"
-CMD ["-blobsFrom", "s3://$BUCKET/"]
+ENTRYPOINT gits
+CMD ["-blobs", "s3://$BUCKET/"]

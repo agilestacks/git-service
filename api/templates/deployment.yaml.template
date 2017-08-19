@@ -44,6 +44,7 @@ spec:
             secretKeyRef:
               name: gits-secrets
               key:  auth-api-secret
+        command: ["gits"]
         args:
         - "-aws_region"
         - "${component.git-service.bucket.region}"
@@ -55,7 +56,7 @@ spec:
         - "/git"
         - "-trace"
         - "-debug"
-        - "-blobsFrom" 
+        - "-blobs" 
         - "s3://${component.git-service.bucket.name}/"
         ports:
         - name: http
