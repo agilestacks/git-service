@@ -3,6 +3,8 @@ pkg/
 bin/gits
 bin/linux
 bin/darwin
+.cache
+.envrc
 
 !/src/gits/vendor/
 /src/gits/vendor/*

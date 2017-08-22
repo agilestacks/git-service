@@ -5,12 +5,13 @@ import (
 
 	"gits/api"
 	"gits/config"
+	"gits/flags"
 	"gits/s3"
 	"gits/ssh"
 )
 
 func main() {
-	parseFlags()
+	flags.Parse()
 	s3.Init()
 	ssh.Listen("0.0.0.0", config.SshPort)
 	api.Listen("0.0.0.0", config.HttpPort)

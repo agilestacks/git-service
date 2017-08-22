@@ -45,7 +45,7 @@ func Add(repoId string, files []AddFile, commitMessage string) error {
 	}
 	worktree, err := clone.Worktree()
 	if err != nil {
-		return fmt.Errorf("Unable to open Git repo in-memory worktree: %v", dir, err)
+		return fmt.Errorf("Unable to open Git repo %s in-memory worktree: %v", dir, err)
 	}
 
 	for _, file := range files {

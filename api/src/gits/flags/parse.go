@@ -1,4 +1,4 @@
-package main
+package flags
 
 import (
 	"flag"
@@ -10,7 +10,7 @@ import (
 	"gits/config"
 )
 
-func parseFlags() {
+func Parse() {
 	var blobsFrom string
 	var apiSecretEnvVar, hubApiSecretEnvVar, authApiSecretEnvVar string
 	var hubApiEndpoint, hubApiEndpointEnvVar, hubApiHostEnvVar, hubApiPortEnvVar string
@@ -105,7 +105,8 @@ func lookupEndpoint(endpoint string, endpointEnv string, hostEnv string, portEnv
 		if host != "" {
 			port := "80"
 			if portEnv != "" {
-				port, exist := os.LookupEnv(portEnv)
+				var exist bool
+				port, exist = os.LookupEnv(portEnv)
 				if !exist || port == "" {
 					log.Fatalf("-%s_api_port_env %s env var must point to API port", param, hostEnv)
 				}

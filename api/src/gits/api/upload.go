@@ -5,18 +5,25 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"gits/config"
 	"gits/repo"
 )
 
-func uploadFile(repoId string, path string, req *http.Request, w http.ResponseWriter) {
+func uploadFile(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	repoId := getRepositoryId(vars["organization"], vars["repository"])
+	//(repoId string, path string, req *http.Request, w http.ResponseWriter) {
 	add(repoId,
-		[]repo.AddFile{repo.AddFile{Path: path, Content: req.Body}},
+		[]repo.AddFile{{Path: vars["file"], Content: req.Body}},
 		queryCommitMessage(req),
 		w)
 }
 
-func uploadFiles(repoId string, req *http.Request, w http.ResponseWriter) {
+func uploadFiles(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	repoId := getRepositoryId(vars["organization"], vars["repository"])
+
 	err := req.ParseMultipartForm(config.MultipartMaxMemory)
 	if err != nil {
 		message := fmt.Sprintf("Error parsing multipart request: %v", err)

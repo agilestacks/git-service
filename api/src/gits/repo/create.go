@@ -41,7 +41,7 @@ func initBare(dir string) error {
 	}
 	_, err := cmd.Output()
 	if err != nil {
-		log.Printf("`git init %s` failed: %v", err)
+		log.Printf("`git init` failed: %v", err)
 		return err
 	}
 	return nil

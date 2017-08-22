@@ -2,12 +2,12 @@ package api
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 
+	"github.com/gorilla/mux"
 	"gits/config"
 	"gits/repo"
 )
@@ -16,7 +16,10 @@ import (
    https://git-scm.com/book/en/v2/Git-Internals-Transfer-Protocols
    https://github.com/go-gitea/gitea/blob/HEAD/routers/repo/http.go */
 
-func sendRefsInfo(repoId string, w http.ResponseWriter) {
+func sendRefsInfo(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	repoId := getRepositoryId(vars["organization"], vars["repository"])
+
 	if config.Verbose {
 		log.Printf("Sending repo `%s` refs", repoId)
 	}
@@ -44,7 +47,10 @@ func gitRpcPacket(str string) string {
 	return s + str
 }
 
-func sendRefsPack(repoId string, w http.ResponseWriter, in io.Reader) {
+func sendRefsPack(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	repoId := getRepositoryId(vars["organization"], vars["repository"])
+
 	if config.Verbose {
 		log.Printf("Sending repo `%s` pack", repoId)
 	}
@@ -52,7 +58,7 @@ func sendRefsPack(repoId string, w http.ResponseWriter, in io.Reader) {
 	w.Header().Set("Content-Type", "application/x-git-upload-pack-result")
 	w.WriteHeader(http.StatusOK)
 
-	err := repo.RefsPack(repoId, w, in)
+	err := repo.RefsPack(repoId, w, req.Body)
 	if err != nil {
 		message := fmt.Sprintf("Unable to send Git repo `%s` pack: %v", repoId, err)
 		log.Print(message)

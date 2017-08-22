@@ -5,11 +5,15 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"gits/config"
 	"gits/repo"
 )
 
-func deleteRepo(repoId string, w http.ResponseWriter) {
+func deleteRepo(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	repoId := getRepositoryId(vars["organization"], vars["repository"])
+
 	err := repo.Delete(repoId)
 	if err != nil {
 		message := fmt.Sprintf("Unable to delete Git repo `%s`: %v", repoId, err)

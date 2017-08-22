@@ -160,6 +160,18 @@
 			"revisionTime": "2017-08-04T20:32:47Z"
 		},
 		{
+			"checksumSHA1": "g/V4qrXjUGG9B+e3hB+4NAYJ5Gs=",
+			"path": "github.com/gorilla/context",
+			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
+			"revisionTime": "2016-08-17T18:46:32Z"
+		},
+		{
+			"checksumSHA1": "hIbmXmNbwyP44fi1hh6zJrMcYws=",
+			"path": "github.com/gorilla/mux",
+			"revision": "ac112f7d75a0714af1bd86ab17749b31f7809640",
+			"revisionTime": "2017-07-03T15:07:09Z"
+		},
+		{
 			"checksumSHA1": "iCsyavJDnXC9OY//p52IWJWy7PY=",
 			"path": "github.com/jbenet/go-context/io",
 			"revision": "d14ea06fba99483203c19d92cfcd13ebe73135f4",

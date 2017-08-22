@@ -1,33 +1,36 @@
 package api
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"strings"
 
+	"github.com/gorilla/mux"
 	"gits/config"
 	"gits/repo"
+	"io/ioutil"
 )
 
 type CreateRequest struct {
 	Archive string
 }
 
-func createRepo(repoId string, bodyReader io.Reader, w http.ResponseWriter) {
-	var body bytes.Buffer
-	read, err := body.ReadFrom(bodyReader)
+func createRepo(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	repoId := getRepositoryId(vars["organization"], vars["repository"])
+
+	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, fmt.Sprintf("Error reading request body (read %d bytes): %v", read, err))
+		writeError(w, http.StatusInternalServerError,
+			fmt.Sprintf("Error reading request body: %v", err))
 		return
 	}
 	archive := ""
-	if read > 4 {
+	if len(body) > 4 {
 		var req CreateRequest
-		err = json.Unmarshal(body.Bytes(), &req)
+		err = json.Unmarshal(body, &req)
 		if err != nil {
 			writeError(w, http.StatusBadRequest, fmt.Sprintf("Error unmarshalling JSON request: %v", err))
 			return
