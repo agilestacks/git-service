@@ -48,7 +48,7 @@ clean:
 	@yes n | rm -rf linux/darwin | true
 	@find src -not -path "*src/gits*" -not -path "src" -type d -maxdepth 1 | xargs rm -rf
 
-build:
+build: govendor
 	@docker run --rm \
 		-v "$(GOPATH)/src/gits":/usr/local/go/src/gits \
 		-v "$(GOPATH)/bin/linux":/linuxbuild \
