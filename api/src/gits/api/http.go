@@ -127,14 +127,20 @@ func checkApiSecret(req *http.Request) bool {
 	if config.GitApiSecret == "" {
 		return true
 	}
-	if req.Header.Get("X-API-Secret") == config.GitApiSecret {
+
+	xApiSecret := req.Header.Get("X-API-Secret")
+	if config.Trace {
+		log.Printf("X-API-Secret `%v`", xApiSecret)
+	}
+	if xApiSecret == config.GitApiSecret {
 		return true
 	}
 
-	// for git clone http://
+	// for git clone https://
 	user, password, ok := req.BasicAuth()
 	if config.Trace {
-		log.Printf("Basic auth %v %v %v", ok, user, password)
+		log.Printf("Authorization `%v`; Basic auth %v `%v` `%v`",
+			req.Header.Get("Authorization"), ok, user, password)
 	}
 	if ok {
 		return user == config.GitApiSecret || password == config.GitApiSecret
