@@ -127,6 +127,9 @@ func checkApiSecret(req *http.Request) bool {
 
 	// for git clone http://
 	user, password, ok := req.BasicAuth()
+	if config.Trace {
+		log.Printf("Basic auth %v %v %v", ok, user, password)
+	}
 	if ok {
 		return user == config.GitApiSecret || password == config.GitApiSecret
 	}
