@@ -12,6 +12,8 @@ import (
 	"gits/repo"
 )
 
+var InfoPack = repo.InfoPack
+
 /* https://github.com/git/git/blob/master/Documentation/technical/http-protocol.txt
    https://git-scm.com/book/en/v2/Git-Internals-Transfer-Protocols
    https://github.com/go-gitea/gitea/blob/HEAD/routers/repo/http.go */
@@ -30,7 +32,7 @@ func sendRefsInfo(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte(gitRpcPacket("# service=git-upload-pack\n")))
 	w.Write([]byte("0000"))
 
-	err := repo.InfoPack(repoId, w)
+	err := InfoPack(repoId, w)
 	if err != nil {
 		message := fmt.Sprintf("Unable to send Git repo `%s` refs: %v", repoId, err)
 		log.Print(message)

@@ -49,7 +49,7 @@ func withApiSecret(handler http.Handler) http.Handler {
 	})
 }
 
-func Listen(host string, port int) {
+func getRouter() http.Handler {
 	r := mux.NewRouter()
 	r.NotFoundHandler = mw(withLogger)(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.WriteHeader(http.StatusNotFound)
@@ -86,6 +86,12 @@ func Listen(host string, port int) {
 
 			sendRefsPack(rw, req)
 		})))
+
+	return r
+}
+
+func Listen(host string, port int) {
+	r := getRouter()
 
 	http.Handle("/", r)
 
