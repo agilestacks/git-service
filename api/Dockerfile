@@ -14,7 +14,7 @@ VOLUME /git
 
 RUN chmod +x /bin/gits && \
     chmod 600 /gits-key && \
-    apk add --update git openssh && \
+    apk add --update git && \
     rm /var/cache/apk/*
 
 EXPOSE 2022
