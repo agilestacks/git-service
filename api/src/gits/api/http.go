@@ -4,15 +4,17 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"gits/config"
-	"gopkg.in/src-d/go-git.v4/utils/ioutil"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/gorilla/mux"
+	"gopkg.in/src-d/go-git.v4/utils/ioutil"
+
+	"gits/config"
 )
 
 type middleware func(http.Handler) http.Handler
