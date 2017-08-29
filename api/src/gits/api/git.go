@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -34,9 +33,7 @@ func sendRefsInfo(w http.ResponseWriter, req *http.Request) {
 
 	err := InfoPack(repoId, w)
 	if err != nil {
-		message := fmt.Sprintf("Unable to send Git repo `%s` refs: %v", repoId, err)
-		log.Print(message)
-		strings.NewReader(message).WriteTo(w)
+		log.Printf("Got error from Git while sending repo `%s` refs: %v", repoId, err)
 	}
 }
 
@@ -62,8 +59,6 @@ func sendRefsPack(w http.ResponseWriter, req *http.Request) {
 
 	err := repo.RefsPack(repoId, w, req.Body)
 	if err != nil {
-		message := fmt.Sprintf("Unable to send Git repo `%s` pack: %v", repoId, err)
-		log.Print(message)
-		strings.NewReader(message).WriteTo(w)
+		log.Printf("Got error from Git while sending repo `%s` pack: %v", repoId, err)
 	}
 }
