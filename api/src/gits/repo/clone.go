@@ -2,6 +2,7 @@ package repo
 
 import (
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -21,6 +22,9 @@ func InfoPack(repoId string, out io.Writer) error {
 	if config.Debug {
 		cmd.Stderr = os.Stdout
 	}
+	if config.Trace {
+		log.Printf("Git refs: %s %v %s", cmd.Path, cmd.Args, cmd.Dir)
+	}
 	return cmd.Run()
 }
 
@@ -36,6 +40,9 @@ func RefsPack(repoId string, out io.Writer, in io.Reader) error {
 	}
 	if config.Debug {
 		cmd.Stderr = os.Stdout
+	}
+	if config.Trace {
+		log.Printf("Git pack: %s %v %s", cmd.Path, cmd.Args, cmd.Dir)
 	}
 	return cmd.Run()
 }

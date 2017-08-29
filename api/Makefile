@@ -33,7 +33,7 @@ run:
 		-repo_dir /tmp/gits \
 		-aws_region us-east-2 \
 		-aws_profile agilestacks \
-		-debug
+		-trace
 
 fmt:
 	@go fmt gits gits/api gits/config gits/repo gits/s3 gits/ssh
