@@ -33,10 +33,14 @@ func withLogger(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		httptest.NewRecorder()
 
-		log.Printf("%s: %s", req.Method, req.URL)
-		crw := NewCapturingResponseWriter(rw, true)
+		if config.Debug {
+			log.Printf("HTTP ==> %s %s", req.Method, req.URL)
+		}
+		crw := NewCapturingResponseWriter(rw, false)
 		handler.ServeHTTP(crw, req)
-		log.Printf("Response: %d %s", crw.Captured.Status, crw.Captured.Buffer.Bytes())
+		if config.Debug {
+			log.Printf("HTTP <== %d", crw.Captured.Status)
+		}
 	})
 }
 
