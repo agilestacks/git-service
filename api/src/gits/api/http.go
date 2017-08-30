@@ -34,12 +34,12 @@ func withLogger(handler http.Handler) http.Handler {
 		httptest.NewRecorder()
 
 		if config.Debug {
-			log.Printf("HTTP ==> %s %s", req.Method, req.URL)
+			log.Printf("HTTP <<< %s %s", req.Method, req.URL)
 		}
 		crw := NewCapturingResponseWriter(rw, false)
 		handler.ServeHTTP(crw, req)
 		if config.Debug {
-			log.Printf("HTTP <== %d", crw.Captured.Status)
+			log.Printf("HTTP === %d", crw.Captured.Status)
 		}
 	})
 }
