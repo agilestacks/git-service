@@ -66,7 +66,7 @@ podTemplate( inheritFrom: 'agilestacks',label: 'pod',
 
       stage('Deploy Pod') {
         echo "Schedule kubernetes deployment!"
-        kubernetesRedeployImage('secret-service', imageTag1)
+        kubernetesRedeployImage('git-service', imageTag1)
         echo "Done!"
       }
     }
