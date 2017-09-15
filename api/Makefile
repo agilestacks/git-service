@@ -57,14 +57,17 @@ build: govendor
 	@docker build -t $(IMAGE):$(IMAGE_VERSION) .
 .PHONY: build
 
-push:
+ecr-login:
 	aws ecr get-login --region $(AWS_DEFAULT_REGION) | sed -e 's/[ +]-e[ +]none[ +]/ /g' | sh -
+.PHONY: ecr-login
+
+push:
 	docker tag  $(IMAGE):$(IMAGE_VERSION) $(IMAGE):latest
 	docker push $(IMAGE):$(IMAGE_VERSION)
 	docker push $(IMAGE):latest
 .PHONY: push
 
-deploy: install build push
+deploy: install build ecr-login push
 	$(kubectl) apply -f templates/namespace.yaml
 	$(kubectl) apply -f templates/volume.yaml
 	$(kubectl) apply -f templates/pvc.yaml
