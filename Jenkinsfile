@@ -34,15 +34,13 @@ podTemplate( inheritFrom: 'agilestacks',label: 'pod',
     dir('api') {
       stage('Compile') {
         container('go') {
-          sh script: """
+          sh_ script: """
             GOPATH=\$(pwd)
             go get -u github.com/mitchellh/gox
             go get -u github.com/kardianos/govendor
           """, ctx: currentBuild
-        }
-        dir('src/gits') {
-          container('go') {
-            sh script: """
+          dir('src/gits') {
+            sh_ script: """
               GOPATH=\$(pwd)/../../
               \$GOPATH/bin/govendor sync
               go build -o \$GOBIN/linux/gits-musl -v gits
