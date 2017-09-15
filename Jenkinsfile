@@ -65,6 +65,12 @@ podTemplate( inheritFrom: 'agilestacks',label: 'pod',
           echo "Pushed!"
         }
       }
+
+      stage('Deploy Pod') {
+        echo "Schedule kubernetes deployment!"
+        kubernetesRedeployImage('secret-service', imageTag1)
+        echo "Done!"
+      }
     }
   }
 }
