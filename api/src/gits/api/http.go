@@ -55,6 +55,55 @@ func withApiSecret(handler http.Handler) http.Handler {
 	})
 }
 
+func withAuth(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		if !checkApiSecretOrUserAuth(req) {
+			rw.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		handler.ServeHTTP(rw, req)
+	})
+}
+
+func withRepoExist(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		if !checkRepoExist(req) {
+			rw.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		handler.ServeHTTP(rw, req)
+	})
+}
+
+func withAllowedGitService(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		if !checkGitService(req) {
+			rw.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		handler.ServeHTTP(rw, req)
+	})
+}
+
+func gunzip(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		if req.Header.Get("Content-Encoding") == "gzip" {
+			in, err := gzip.NewReader(req.Body)
+			if err != nil {
+				log.Printf("Unable to decompress request: %v", err)
+				rw.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			req.Body = ioutil.NewReadCloser(in, req.Body)
+		}
+
+		handler.ServeHTTP(rw, req)
+	})
+}
+
 func getRouter() http.Handler {
 	r := mux.NewRouter()
 	r.NotFoundHandler = mw(withLogger)(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
@@ -74,24 +123,12 @@ func getRouter() http.Handler {
 		Methods("GET")
 
 	s = r.PathPrefix("/repo/{organization}/{repository}").Subrouter()
-	s.Path("/info/refs").Queries("service", "git-upload-pack").
+	s.Path("/info/refs").Queries("service", "{service}").
 		Methods("GET").
-		Handler(mw(withLogger, withApiSecret)(http.HandlerFunc(sendRefsInfo)))
-	s.Path("/git-upload-pack").
+		Handler(mw(withLogger, withAuth, withAllowedGitService, withRepoExist)(http.HandlerFunc(refsInfo)))
+	s.Path("/{service}").
 		Methods("POST").
-		Handler(mw(withLogger, withApiSecret)(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-			if req.Header.Get("Content-Encoding") == "gzip" {
-				in, err := gzip.NewReader(req.Body)
-				if err != nil {
-					log.Printf("Unable to decompress request: %v", err)
-					rw.WriteHeader(http.StatusInternalServerError)
-					return
-				}
-				req.Body = ioutil.NewReadCloser(in, req.Body)
-			}
-
-			sendRefsPack(rw, req)
-		})))
+		Handler(mw(withLogger, withAuth, withAllowedGitService, withRepoExist, gunzip)(http.HandlerFunc(pack)))
 
 	return r
 }
@@ -154,6 +191,8 @@ func checkApiSecret(req *http.Request) bool {
 
 	return false
 }
+
+var checkApiSecretOrUserAuth = checkApiSecret
 
 var alphaNum = regexp.MustCompile("[^a-z0-9-]+")
 

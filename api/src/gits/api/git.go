@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -11,29 +12,45 @@ import (
 	"gits/repo"
 )
 
-var InfoPack = repo.InfoPack
+// used by api/ test
+var InfoPack = repo.RefsInfo
 
 /* https://github.com/git/git/blob/master/Documentation/technical/http-protocol.txt
    https://git-scm.com/book/en/v2/Git-Internals-Transfer-Protocols
    https://github.com/go-gitea/gitea/blob/HEAD/routers/repo/http.go */
 
-func sendRefsInfo(w http.ResponseWriter, req *http.Request) {
+func checkGitService(req *http.Request) bool {
+	vars := mux.Vars(req)
+	service := vars["service"]
+
+	return service == "git-upload-pack" || service == "git-receive-pack"
+}
+
+func checkRepoExist(req *http.Request) bool {
 	vars := mux.Vars(req)
 	repoId := getRepositoryId(vars["organization"], vars["repository"])
 
+	return repo.RepoExist(repoId)
+}
+
+func refsInfo(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	repoId := getRepositoryId(vars["organization"], vars["repository"])
+	service := vars["service"]
+
 	if config.Verbose {
-		log.Printf("Sending repo `%s` refs", repoId)
+		log.Printf("Repo `%s` %s refs", repoId, service)
 	}
 
 	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Content-Type", "application/x-git-upload-pack-advertisement")
+	w.Header().Set("Content-Type", fmt.Sprintf("application/x-%s-advertisement", service))
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(gitRpcPacket("# service=git-upload-pack\n")))
+	w.Write([]byte(gitRpcPacket(fmt.Sprintf("# service=%s\n", service))))
 	w.Write([]byte("0000"))
 
-	err := InfoPack(repoId, w)
+	err := InfoPack(repoId, service, w)
 	if err != nil {
-		log.Printf("Got error from Git while sending repo `%s` refs: %v", repoId, err)
+		log.Printf("Got error from Git while %s repo `%s` refs: %v", service, repoId, err)
 	}
 }
 
@@ -46,19 +63,20 @@ func gitRpcPacket(str string) string {
 	return s + str
 }
 
-func sendRefsPack(w http.ResponseWriter, req *http.Request) {
+func pack(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	repoId := getRepositoryId(vars["organization"], vars["repository"])
+	service := vars["service"]
 
 	if config.Verbose {
-		log.Printf("Sending repo `%s` pack", repoId)
+		log.Printf("Repo `%s` %s pack", repoId, service)
 	}
 
-	w.Header().Set("Content-Type", "application/x-git-upload-pack-result")
+	w.Header().Set("Content-Type", fmt.Sprintf("application/x-%s-result", service))
 	w.WriteHeader(http.StatusOK)
 
-	err := repo.RefsPack(repoId, w, req.Body)
+	err := repo.Pack(repoId, service, w, req.Body)
 	if err != nil {
-		log.Printf("Got error from Git while sending repo `%s` pack: %v", repoId, err)
+		log.Printf("Got error from Git while %s repo `%s` pack: %v", service, repoId, err)
 	}
 }
