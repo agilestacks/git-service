@@ -26,6 +26,9 @@ compile: govendor
 		-osarch="darwin/amd64 linux/amd64" \
 		-output=$(GOPATH)/bin/{{.OS}}/{{.Dir}} gits/...
 
+get:
+	@go get gits
+
 run:
 	go get gits && $(GOBIN)/gits \
 		-api_secret_env '' \
