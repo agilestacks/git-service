@@ -16,7 +16,7 @@ func main() {
 	ssh.Listen("0.0.0.0", config.SshPort)
 	api.Listen("0.0.0.0", config.HttpPort)
 	if config.Verbose {
-		log.Print("Git Service started")
+		log.Printf("Git Service started on HTTP port %d, SSH port %d", config.HttpPort, config.SshPort)
 	}
 	select {}
 }
