@@ -42,7 +42,7 @@ func checkUserRepoAccess(req *http.Request) bool {
 	repoId := getRepositoryId(vars["organization"], vars["repository"])
 	service := vars["service"]
 
-	hasAccess, err := repo.AccessWithLogin(repoId, service, username, password)
+	hasAccess, err := repo.AccessWithLogin(vars["organization"], repoId, service, username, password)
 	if err != nil {
 		log.Printf("No access %s to `%s` for `%s`: %v", service, repoId, username, err)
 		return false

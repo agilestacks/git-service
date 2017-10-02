@@ -62,7 +62,7 @@ func Access(repo string, verb string, users []string) (bool, error) {
 	return false, teamErr
 }
 
-func AccessWithLogin(repo, verb, username, password string) (bool, error) {
+func AccessWithLogin(org, repo, verb, username, password string) (bool, error) {
 	templateId, err := templateId(repo)
 	if err != nil {
 		return false, err
@@ -71,6 +71,10 @@ func AccessWithLogin(repo, verb, username, password string) (bool, error) {
 	user, err := extapi.Login(username, password)
 	if err != nil {
 		return false, fmt.Errorf("Unable to signin user `%s`: %v", username, err)
+	}
+
+	if org != user.Organization {
+		return false, fmt.Errorf("User org `%s` does not match repo org `%s`", user.Organization, org)
 	}
 
 	template, err := extapi.TemplateById(templateId)
