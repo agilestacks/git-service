@@ -73,7 +73,7 @@ func AccessWithLogin(org, repo, verb, username, password string) (bool, error) {
 		return false, fmt.Errorf("Unable to signin user `%s`: %v", username, err)
 	}
 
-	if org != user.Organization {
+	if strings.ToLower(org) != strings.ToLower(user.Organization) {
 		return false, fmt.Errorf("User org `%s` does not match repo org `%s`", user.Organization, org)
 	}
 
