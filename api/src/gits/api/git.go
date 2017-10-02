@@ -33,6 +33,23 @@ func checkRepoExist(req *http.Request) bool {
 	return repo.RepoExist(repoId)
 }
 
+func checkUserRepoAccess(req *http.Request) bool {
+	username, password, ok := req.BasicAuth()
+	if !ok {
+		return false
+	}
+	vars := mux.Vars(req)
+	repoId := getRepositoryId(vars["organization"], vars["repository"])
+	service := vars["service"]
+
+	hasAccess, err := repo.AccessWithLogin(repoId, service, username, password)
+	if err != nil {
+		log.Printf("No access %s to `%s` for `%s`: %v", service, repoId, username, err)
+		return false
+	}
+	return hasAccess
+}
+
 func refsInfo(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	repoId := getRepositoryId(vars["organization"], vars["repository"])

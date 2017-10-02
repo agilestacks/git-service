@@ -28,6 +28,9 @@ func UsersByTeam(teamId string) ([]string, error) {
 
 	authTeams := fmt.Sprintf("%s/api/v1/teams/%s", config.AuthApiEndpoint, url.QueryEscape(teamId))
 	req, err := http.NewRequest("GET", authTeams, nil)
+	if err != nil {
+		return nil, fmt.Errorf("Error creating Auth Service request: %v", err)
+	}
 	if config.AuthApiSecret != "" {
 		req.Header.Add("X-API-Secret", config.AuthApiSecret)
 	}

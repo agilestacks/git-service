@@ -193,7 +193,12 @@ func checkApiSecret(req *http.Request) bool {
 	return false
 }
 
-var checkApiSecretOrUserAuth = checkApiSecret
+func checkApiSecretOrUserAuth(req *http.Request) bool {
+	if checkApiSecret(req) {
+		return true
+	}
+	return checkUserRepoAccess(req)
+}
 
 var alphaNum = regexp.MustCompile("[^a-z0-9-]+")
 

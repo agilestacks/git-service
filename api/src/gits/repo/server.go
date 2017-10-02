@@ -35,7 +35,7 @@ func GitServer(command string, stdin io.Reader, stdout io.Writer, stderr io.Writ
 		log.Printf("Git command parsed: %s %s", verb, repo)
 	}
 
-	hasAccess, err := access(repo, verb, users)
+	hasAccess, err := Access(repo, verb, users)
 	if err != nil {
 		log.Printf("Checking `%s` repo permissions for %v: %v", repo, users, err)
 	}

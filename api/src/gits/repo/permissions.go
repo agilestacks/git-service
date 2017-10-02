@@ -12,12 +12,19 @@ type UserAccess struct {
 	CanWrite bool
 }
 
-func access(repo string, verb string, users []string) (bool, error) {
+func templateId(repo string) (string, error) {
 	dash := strings.LastIndex(repo, "-")
 	if dash <= 1 || dash >= len(repo)-1 {
-		return false, fmt.Errorf("Unable to determine stack template id from repo name `%s`", repo)
+		return "", fmt.Errorf("Unable to determine stack template id from repo name `%s`", repo)
 	}
-	templateId := repo[dash+1:]
+	return repo[dash+1:], nil
+}
+
+func Access(repo string, verb string, users []string) (bool, error) {
+	templateId, err := templateId(repo)
+	if err != nil {
+		return false, err
+	}
 
 	template, err := extapi.TemplateById(templateId)
 	if err != nil {
@@ -53,4 +60,37 @@ func access(repo string, verb string, users []string) (bool, error) {
 	}
 
 	return false, teamErr
+}
+
+func AccessWithLogin(repo, verb, username, password string) (bool, error) {
+	templateId, err := templateId(repo)
+	if err != nil {
+		return false, err
+	}
+
+	user, err := extapi.Login(username, password)
+	if err != nil {
+		return false, fmt.Errorf("Unable to signin user `%s`: %v", username, err)
+	}
+
+	template, err := extapi.TemplateById(templateId)
+	if err != nil {
+		return false, fmt.Errorf("Unable to fetch template `%s` info: %v", templateId, err)
+	}
+
+	if user.Uid == template.OwnerUserId {
+		return true, nil
+	}
+
+	writeRequested := verb == "git-receive-pack"
+
+	for _, userTeam := range user.Groups {
+		for _, templateTeam := range template.Teams {
+			if userTeam == templateTeam.TeamName && (!writeRequested || templateTeam.CanWrite) {
+				return true, nil
+			}
+		}
+	}
+
+	return false, nil
 }

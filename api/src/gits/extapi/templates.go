@@ -23,12 +23,14 @@ type HubTemplate struct {
 
 type TeamAccess struct {
 	TeamId   string
+	TeamName string
 	CanWrite bool
 }
 
 type Template struct {
 	OwnerUserId string
 	Teams       []TeamAccess
+	// maybe we should have OwnerOrg here too
 }
 
 func TemplateById(templateId string) (*Template, error) {
@@ -70,7 +72,7 @@ func TemplateById(templateId string) (*Template, error) {
 		if team.Role == "admin" || team.Role == "write" {
 			canWrite = true
 		}
-		teams = append(teams, TeamAccess{TeamId: team.Id, CanWrite: canWrite})
+		teams = append(teams, TeamAccess{TeamId: team.Id, TeamName: team.Name, CanWrite: canWrite})
 	}
 	return &Template{OwnerUserId: template.OwnerId, Teams: teams}, nil
 }
