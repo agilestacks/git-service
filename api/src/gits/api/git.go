@@ -52,12 +52,12 @@ func checkUserRepoAccess(req *http.Request) bool {
 	hasAccess := false
 
 	if deploymentKey != "" {
-		decodedUsername, macErr := decodeDeploymentKey(deploymentKey)
+		decodedUsername, decodeErr := decodeDeploymentKey(deploymentKey)
 		var accessErr error
 		hasAccess, accessErr = repo.Access(repoId, service, []string{decodedUsername})
-		if macErr != nil || accessErr != nil {
+		if decodeErr != nil || accessErr != nil {
 			log.Printf("No %s access to `%s` for token `%s...` user `%s`: %v; %v",
-				service, repoId, deploymentKey[0:8], decodedUsername, macErr, accessErr)
+				service, repoId, deploymentKey[0:8], decodedUsername, decodeErr, accessErr)
 			return false
 		}
 	} else {

@@ -40,17 +40,19 @@ func Init() {
 }
 
 func decodeDeploymentKey(deploymentKeyHex string) (string, error) {
+    userId := "user-id-that-wont-match-anything"
+
 	if len(deploymentKeyHex) != deploymentKeyHexLen {
-		return "", fmt.Errorf("Bad deployment key length %d", len(deploymentKeyHex))
+		return userId, fmt.Errorf("Bad deployment key length %d", len(deploymentKeyHex))
 	}
 
 	deploymentKey, err := hex.DecodeString(deploymentKeyHex)
 	if err != nil {
-		return "", err
+		return userId, err
 	}
 
 	if len(deploymentKeySecret) == 0 {
-		return "", fmt.Errorf("Deployment key decoding not initialized")
+		return userId, fmt.Errorf("Deployment key decoding not initialized")
 	}
 
 	mac := deploymentKey[0:deploymentKeyMacLen]
@@ -66,13 +68,12 @@ func decodeDeploymentKey(deploymentKeyHex string) (string, error) {
 
 	block, err := aes.NewCipher(deploymentKeyEncryptionKey)
 	if err != nil {
-		return "", err
+		return userId, err
 	}
 	decrypter := cipher.NewCBCDecrypter(block, deploymentKeyIV)
 	paddedUserId := make([]byte, deploymentKeyBlockLen)
 	decrypter.CryptBlocks(paddedUserId, encryptedUserId)
 
-	userId := "user-id-that-wont-match-anything"
 	sepIndex := bytes.Index(paddedUserId, deploymentKeySep)
 	if sepIndex > 0 {
 		userId = string(paddedUserId[0:sepIndex])
