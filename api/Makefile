@@ -39,7 +39,7 @@ run:
 		-trace
 
 fmt:
-	@go fmt gits gits/api gits/config gits/repo gits/s3 gits/ssh
+	@go fmt gits gits/api gits/config gits/extapi gits/flags gits/repo gits/s3 gits/ssh
 
 key:
 	@ssh-keygen -t rsa -f gits-key -N ''
