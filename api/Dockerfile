@@ -1,6 +1,20 @@
+FROM golang:1.9-alpine as builder
+
+RUN apk update && apk upgrade && \
+    apk add --no-cache git
+
+WORKDIR /go/src/gits
+COPY src/gits /go/src/gits
+
+RUN go get github.com/kardianos/govendor
+RUN /go/bin/govendor sync
+RUN go build -v gits
+RUN ls /go/src/gits
+
+
 FROM alpine
 
-ARG GIT_VERSION="2.14.1-r1"
+ARG GIT_VERSION="2.14.2-r0"
 
 ENV GIT_API_SECRET "*** unset ***"
 ENV HUB_API_SECRET "*** unset ***"
@@ -9,7 +23,8 @@ ENV HUB_SERVICE_ENDPOINT "*** unset ***"
 ENV AUTH_SERVICE_ENDPOINT "*** unset ***"
 ENV BUCKET "terraform.agilestacks.com"
 
-COPY bin/linux/gits-musl /bin/gits
+COPY --from=builder /go/src/gits/gits /bin/gits
+
 ADD  https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant /gits-key
 
 VOLUME /git
