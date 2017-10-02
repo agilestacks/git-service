@@ -42,11 +42,33 @@ func checkUserRepoAccess(req *http.Request) bool {
 	repoId := getRepositoryId(vars["organization"], vars["repository"])
 	service := vars["service"]
 
-	hasAccess, err := repo.AccessWithLogin(vars["organization"], repoId, service, username, password)
-	if err != nil {
-		log.Printf("No access %s to `%s` for `%s`: %v", service, repoId, username, err)
-		return false
+	deploymentKey := ""
+	if len(username) == deploymentKeyHexLen {
+		deploymentKey = username
+	} else if len(password) == deploymentKeyHexLen {
+		deploymentKey = password
 	}
+
+	hasAccess := false
+
+	if deploymentKey != "" {
+		decodedUsername, macErr := decodeDeploymentKey(deploymentKey)
+		var accessErr error
+		hasAccess, accessErr = repo.Access(repoId, service, []string{decodedUsername})
+		if macErr != nil || accessErr != nil {
+			log.Printf("No %s access to `%s` for token `%s...` user `%s`: %v; %v",
+				service, repoId, deploymentKey[0:8], decodedUsername, macErr, accessErr)
+			return false
+		}
+	} else {
+		var err error
+		hasAccess, err = repo.AccessWithLogin(vars["organization"], repoId, service, username, password)
+		if err != nil {
+			log.Printf("No %s access to `%s` for user `%s`: %v", service, repoId, username, err)
+			return false
+		}
+	}
+
 	return hasAccess
 }
 

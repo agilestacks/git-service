@@ -12,6 +12,7 @@ import (
 
 func main() {
 	flags.Parse()
+	api.Init()
 	s3.Init()
 	ssh.Listen("0.0.0.0", config.SshPort)
 	api.Listen("0.0.0.0", config.HttpPort)
