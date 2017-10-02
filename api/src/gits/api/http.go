@@ -58,6 +58,7 @@ func withApiSecret(handler http.Handler) http.Handler {
 func withAuth(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		if !checkApiSecretOrUserAuth(req) {
+			rw.Header().Set("WWW-Authenticate", "Basic realm=\".\"")
 			rw.WriteHeader(http.StatusUnauthorized)
 			return
 		}
