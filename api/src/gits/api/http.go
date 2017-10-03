@@ -132,7 +132,17 @@ func getRouter() http.Handler {
 		Methods("POST").
 		Handler(mw(cmw, gunzip)(http.HandlerFunc(pack)))
 
+	s = r.PathPrefix("/api/v1/ping").Subrouter()
+	s.Handle("", mw(withLogger)(http.HandlerFunc(ping))).
+		Methods("GET")
+
 	return r
+}
+
+func ping(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("pong"))
 }
 
 func Listen(host string, port int) {
