@@ -40,7 +40,7 @@ func Init() {
 }
 
 func decodeDeploymentKey(deploymentKeyHex string) (string, error) {
-    userId := "user-id-that-wont-match-anything"
+	userId := "user-id-that-wont-match-anything"
 
 	if len(deploymentKeyHex) != deploymentKeyHexLen {
 		return userId, fmt.Errorf("Bad deployment key length %d", len(deploymentKeyHex))
