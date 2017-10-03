@@ -20,7 +20,7 @@ func UsersBySshKey(keyBase64 string, keyFingerprintSHA256 string) ([]string, err
 		return agileUsers, nil
 	}
 
-	hubUserKeys := fmt.Sprintf("%s/api/v1/user/keys?fingerprint=%s", config.HubApiEndpoint, url.QueryEscape(keyFingerprintSHA256))
+	hubUserKeys := fmt.Sprintf("%s/user/keys?fingerprint=%s", config.HubApiEndpoint, url.QueryEscape(keyFingerprintSHA256))
 	req, err := http.NewRequest("GET", hubUserKeys, nil)
 	if config.HubApiSecret != "" {
 		req.Header.Add("X-API-Secret", config.HubApiSecret)

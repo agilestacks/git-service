@@ -36,8 +36,8 @@ func Login(username string, password string) (*AuthUser, error) {
 		return nil, fmt.Errorf("Error marshalling signin request: %v", err)
 	}
 
-	signin := fmt.Sprintf("%s/api/v1/signin", config.AuthApiEndpoint)
 	req, err := http.NewRequest("POST", signin, bytes.NewBuffer(reqBody))
+	signin := fmt.Sprintf("%s/signin", config.AuthApiEndpoint)
 	if err != nil {
 		return nil, fmt.Errorf("Error creating Auth Service request: %v", err)
 	}

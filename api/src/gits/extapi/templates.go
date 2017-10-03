@@ -40,7 +40,7 @@ func TemplateById(templateId string) (*Template, error) {
 			TeamAccess{TeamId: "2" /*non-existing team*/, CanWrite: false}}}, nil
 	}
 
-	hubTemplates := fmt.Sprintf("%s/api/v1/templates/%s", config.HubApiEndpoint, url.QueryEscape(templateId))
+	hubTemplates := fmt.Sprintf("%s/templates/%s", config.HubApiEndpoint, url.QueryEscape(templateId))
 	req, err := http.NewRequest("GET", hubTemplates, nil)
 	if config.HubApiSecret != "" {
 		req.Header.Add("X-API-Secret", config.HubApiSecret)

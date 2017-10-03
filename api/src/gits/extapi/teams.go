@@ -26,7 +26,7 @@ func UsersByTeam(teamId string) ([]string, error) {
 		return nil, fmt.Errorf("No `%s` team found", teamId)
 	}
 
-	authTeams := fmt.Sprintf("%s/api/v1/teams/%s", config.AuthApiEndpoint, url.QueryEscape(teamId))
+	authTeams := fmt.Sprintf("%s/teams/%s", config.AuthApiEndpoint, url.QueryEscape(teamId))
 	req, err := http.NewRequest("GET", authTeams, nil)
 	if err != nil {
 		return nil, fmt.Errorf("Error creating Auth Service request: %v", err)
