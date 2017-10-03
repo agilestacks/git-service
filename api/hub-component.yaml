@@ -15,13 +15,15 @@ parameters:
 - name: component.auth-service.endpoint
 - name: component.git-service
   parameters:
+  - name: name
+    default: git
+  - name: service
+    default: gits
   - name: namespace
     default: automation-hub
     env:  NAMESPACE
   - name: image
     env:  IMAGE
-  - name: service
-    default: git
   - name: gitApiSecret
     kind: user
   - name: hubApiSecret
@@ -38,7 +40,6 @@ parameters:
     default: us-east-2
   - name: bucket.name
     default: agilestacks-distribution
-    
 - name: dns.domain
   brief: DNS domain
   kind: tech

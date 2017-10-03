@@ -71,13 +71,15 @@ deploy: build ecr-login push
 	$(kubectl) apply -f templates/pvc.yaml
 	$(kubectl) apply -f templates/secret.yaml
 	$(kubectl) apply -f templates/service.yaml
+	$(kubectl) apply -f templates/ingress.yaml
 	$(kubectl) apply -f templates/deployment.yaml
 .PHONY: deploy
 
 undeploy:
 	$(kubectl) delete -f templates/deployment.yaml | true
-	$(kubectl) apply -f templates/pvc.yaml	       | true
-	$(kubectl) apply -f templates/volume.yaml	   | true
+	$(kubectl) apply -f templates/pvc.yaml         | true
+	$(kubectl) apply -f templates/volume.yaml      | true
+	$(kubectl) delete -f templates/ingress.yaml    | true
 	$(kubectl) delete -f templates/service.yaml    | true
 	$(kubectl) delete -f templates/secret.yaml     | true
 .PHONY: undeploy
