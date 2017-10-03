@@ -10,8 +10,8 @@ import (
 )
 
 type AuthUserPass struct {
-	Username string
-	Password string
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type AuthUser struct {
@@ -36,11 +36,12 @@ func Login(username string, password string) (*AuthUser, error) {
 		return nil, fmt.Errorf("Error marshalling signin request: %v", err)
 	}
 
-	req, err := http.NewRequest("POST", signin, bytes.NewBuffer(reqBody))
 	signin := fmt.Sprintf("%s/signin", config.AuthApiEndpoint)
+	req, err := http.NewRequest("POST", signin, bytes.NewReader(reqBody))
 	if err != nil {
 		return nil, fmt.Errorf("Error creating Auth Service request: %v", err)
 	}
+	req.Header.Add("Content-type", "application/json")
 	if config.AuthApiSecret != "" {
 		req.Header.Add("X-API-Secret", config.AuthApiSecret)
 	}
