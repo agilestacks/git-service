@@ -11,6 +11,7 @@ requires:
 - kubernetes
 
 parameters:
+- name: component.ingress.fqdn
 - name: component.automation-hub.endpoint
 - name: component.auth-service.endpoint
 - name: component.git-service
