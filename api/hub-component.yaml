@@ -54,3 +54,6 @@ outputs:
 - name: component.git-service.endpoint
   brief: Git service API endpoint
   value: http://${component.git-service.service}.${component.git-service.namespace}.svc.cluster.local/api/v1
+- name: component.git-service.ingressEndpoint
+  brief: Git service ingress
+  value: https://${component.git-service.name}.${component.ingress.fqdn}
