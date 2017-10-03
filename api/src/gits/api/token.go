@@ -75,7 +75,7 @@ func decodeDeploymentKey(deploymentKeyHex string) (string, error) {
 	decrypter.CryptBlocks(paddedUserId, encryptedUserId)
 
 	sepIndex := bytes.Index(paddedUserId, deploymentKeySep)
-	if sepIndex > 0 {
+	if sepIndex > 0 && macErr == nil {
 		userId = string(paddedUserId[0:sepIndex])
 	}
 
