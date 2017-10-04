@@ -12,7 +12,8 @@ import (
 )
 
 type AuthTeamMember struct {
-	Id string
+	Id     string
+	Status string
 }
 
 type AuthTeam struct {
@@ -61,7 +62,9 @@ func UsersByTeam(teamId string) ([]string, error) {
 	}
 	members := make([]string, 0, len(team.Members))
 	for _, user := range team.Members {
-		members = append(members, user.Id)
+		if user.Status == "ACTIVE" {
+			members = append(members, user.Id)
+		}
 	}
 	return members, nil
 }
