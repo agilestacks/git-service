@@ -18,8 +18,8 @@ type HubTeam struct {
 }
 
 type HubTemplate struct {
-	OwnerId string
-	Teams   []HubTeam
+	OwnerId          string    `json:"ownerId"`
+	TeamsPermissions []HubTeam `json:"teamsPermissions"`
 }
 
 type TeamAccess struct {
@@ -70,8 +70,8 @@ func TemplateById(templateId string) (*Template, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Error unmarshalling Hub templates response: %v", err)
 	}
-	teams := make([]TeamAccess, 0, len(template.Teams))
-	for _, team := range template.Teams {
+	teams := make([]TeamAccess, 0, len(template.TeamsPermissions))
+	for _, team := range template.TeamsPermissions {
 		canWrite := false
 		if team.Role == "admin" || team.Role == "write" {
 			canWrite = true
