@@ -7,13 +7,14 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"gits/config"
 )
 
 type HubUserKey struct {
-	UserId    string
-	PublicKey string
+	UserId    string `json:"userId"`
+	PublicKey string `json:"publicKey"`
 }
 
 func UsersBySshKey(keyBase64 string, keyFingerprintSHA256 string) ([]string, error) {
@@ -42,7 +43,7 @@ func UsersBySshKey(keyBase64 string, keyFingerprintSHA256 string) ([]string, err
 	}
 	var body bytes.Buffer
 	read, err := body.ReadFrom(resp.Body)
-	if read < 4 || err != nil {
+	if read < 2 || err != nil {
 		return nil, fmt.Errorf("Error reading Hub response (read %d bytes): %v", read, err)
 	}
 	var usersKeys []HubUserKey
@@ -52,8 +53,10 @@ func UsersBySshKey(keyBase64 string, keyFingerprintSHA256 string) ([]string, err
 	}
 	users := make([]string, 0, len(usersKeys))
 	for _, uk := range usersKeys {
-		if keyBase64 == uk.PublicKey {
-			users = append(users, uk.UserId)
+		for _, maybeKey := range strings.Split(uk.PublicKey, " ") {
+			if len(maybeKey) > 100 && keyBase64 == maybeKey {
+				users = append(users, uk.UserId)
+			}
 		}
 	}
 	return users, nil
