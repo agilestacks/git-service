@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 
@@ -38,6 +39,9 @@ func UsersByTeam(teamId string) ([]string, error) {
 	resp, err := authApi.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("Error querying Auth Service team: %v", err)
+	}
+	if config.Trace {
+		log.Printf("%s %s: %s", req.Method, req.URL.String(), resp.Status)
 	}
 	if resp.StatusCode == 404 {
 		return nil, fmt.Errorf("No `%s` team found", teamId)

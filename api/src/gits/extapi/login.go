@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"gits/config"
@@ -49,6 +50,9 @@ func Login(username string, password string) (*AuthUser, error) {
 	resp, err := authApi.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("Error during Auth Service signin: %v", err)
+	}
+	if config.Trace {
+		log.Printf("%s %s: %s", req.Method, req.URL.String(), resp.Status)
 	}
 	if resp.StatusCode == 404 {
 		return nil, fmt.Errorf("No `%s` user found", username)
