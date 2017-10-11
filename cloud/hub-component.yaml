@@ -24,6 +24,3 @@ outputs:
 - name: component.git-service.image
   brief: Docker image of this component
   fromTfVar: repository_url
-
-templates:
-  files: ["*.template"]
