@@ -121,6 +121,8 @@ func getRouter() http.Handler {
 		Methods("PUT")
 	s.Handle("/commit", cmw(http.HandlerFunc(uploadFiles))).
 		Methods("POST")
+	s.Handle("/subtrees", cmw(http.HandlerFunc(addSubtrees))).
+		Methods("POST")
 	s.Handle("/log", cmw(http.HandlerFunc(sendRepoLog))).
 		Methods("GET")
 

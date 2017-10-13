@@ -100,7 +100,7 @@ Upload a single file and commit to the repository.
     + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
     + message: `log entry` (string, optional) - Git commit log message
 
-+ Request (application/json; charset=utf-8)
++ Request
 
     + Headers
 
@@ -131,7 +131,7 @@ Upload multiple files and commit to the repository.
     + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
     + message: `log entry` (string, optional) - Git commit log message
 
-+ Request (application/json; charset=utf-8)
++ Request
 
     + Headers
 
@@ -149,6 +149,45 @@ Upload multiple files and commit to the repository.
 
             ...
             --boundary--
+
++ Response 204
+
++ Response 404
+
++ Response 403
+
++ Response 500
+
++ Response 502
+
++ Response 504
+
+
+### Add Git subtrees [POST /repositories/{repositoryId}/subtrees]
+
+Add multiple Git subtrees to the repository. `ref` and `squash` are optional.
+
++ Parameters
+    + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
+
++ Request (application/json; charset=utf-8)
+
+    + Headers
+
+            X-API-Secret: git-api-secret
+
+    + Body
+
+            {
+                "subtrees": [
+                    {
+                        "prefix": "components",
+                        "repository": "git@github.com:agilestacks/components.git",
+                        "ref": "master",
+                        "squash": false
+                    }
+                ]
+            }
 
 + Response 204
 
