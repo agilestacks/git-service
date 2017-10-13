@@ -40,7 +40,7 @@ func Add(repoId string, files []AddFile, commitMessage string) error {
 		Progress:     progress,
 	}
 	clone, err := git.Clone(storer, fs, cloneOptions)
-	if err != nil {
+	if err != nil && err.Error() != "remote repository is empty" {
 		return fmt.Errorf("Unable to clone Git repo `%s`: %v", dir, err)
 	}
 	worktree, err := clone.Worktree()
