@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -88,7 +89,7 @@ func AddSubtrees(repoId string, subtrees []AddSubtree) error {
 		}
 		err = cmd.Run()
 		if err != nil {
-			return fmt.Errorf("Unable to add subtree `%s` ref `%s`: %v", subtree.Repository, subtree.Ref, err)
+			return fmt.Errorf("Unable to add subtree `%s` ref `%s`: %v", maskAuth(subtree.Repository), subtree.Ref, err)
 		}
 	}
 
@@ -110,10 +111,10 @@ func AddSubtrees(repoId string, subtrees []AddSubtree) error {
 	}
 
 	if config.Verbose {
-		if config.Trace { // may leak authentication to log
+		if config.Trace {
 			log.Printf("Subtrees added to `%s` repo:", repoId)
 			for _, subtree := range subtrees {
-				log.Printf("\t%s => %s @ %s", subtree.Prefix, subtree.Repository, subtree.Ref)
+				log.Printf("\t%s => %s @ %s", subtree.Prefix, maskAuth(subtree.Repository), subtree.Ref)
 			}
 		} else {
 			added := make([]string, 0, len(subtrees))
@@ -125,6 +126,15 @@ func AddSubtrees(repoId string, subtrees []AddSubtree) error {
 	}
 
 	return nil
+}
+
+func maskAuth(maybeUrl string) string {
+	remote, err := url.Parse(maybeUrl)
+	if err != nil {
+		return maybeUrl
+	}
+	remote.User = url.UserPassword("masked", "")
+	return remote.String()
 }
 
 func noSuchFile(err error) bool {
