@@ -112,19 +112,20 @@ func getRouter() http.Handler {
 	}))
 
 	s := r.PathPrefix("/api/v1/repositories/{organization}/{repository}").Subrouter()
+	cmw := mw(withLogger, withApiSecret, withRepoExist)
 	s.Handle("", mw(withLogger, withApiSecret)(http.HandlerFunc(createRepo))).
 		Methods("PUT")
-	s.Handle("", mw(withLogger, withApiSecret)(http.HandlerFunc(deleteRepo))).
+	s.Handle("", cmw(http.HandlerFunc(deleteRepo))).
 		Methods("DELETE")
-	s.Handle("/commit/{file:.*}", mw(withLogger, withApiSecret)(http.HandlerFunc(uploadFile))).
+	s.Handle("/commit/{file:.*}", cmw(http.HandlerFunc(uploadFile))).
 		Methods("PUT")
-	s.Handle("/commit", mw(withLogger, withApiSecret)(http.HandlerFunc(uploadFiles))).
+	s.Handle("/commit", cmw(http.HandlerFunc(uploadFiles))).
 		Methods("POST")
-	s.Handle("/log", mw(withLogger, withApiSecret)(http.HandlerFunc(sendRepoLog))).
+	s.Handle("/log", cmw(http.HandlerFunc(sendRepoLog))).
 		Methods("GET")
 
 	s = r.PathPrefix("/repo/{organization}/{repository}").Subrouter()
-	cmw := mw(withLogger, withAuth, withAllowedGitService, withRepoExist)
+	cmw = mw(withLogger, withAuth, withAllowedGitService, withRepoExist)
 	s.Path("/info/refs").Queries("service", "{service}").
 		Methods("GET").
 		Handler(cmw(http.HandlerFunc(refsInfo)))
