@@ -29,6 +29,10 @@ func Create(repoId string, archive string) error {
 	}
 	if err != nil {
 		deleteDir(dir)
+	} else {
+		if config.Verbose {
+			log.Printf("Repo `%s` created", repoId)
+		}
 	}
 	return err
 }

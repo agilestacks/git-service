@@ -3,14 +3,14 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
 
 	"github.com/gorilla/mux"
-	"gits/config"
+
 	"gits/repo"
-	"io/ioutil"
 )
 
 type CreateRequest struct {
@@ -29,13 +29,13 @@ func createRepo(w http.ResponseWriter, req *http.Request) {
 	}
 	archive := ""
 	if len(body) > 4 {
-		var req CreateRequest
-		err = json.Unmarshal(body, &req)
+		var reqData CreateRequest
+		err = json.Unmarshal(body, &reqData)
 		if err != nil {
 			writeError(w, http.StatusBadRequest, fmt.Sprintf("Error unmarshalling JSON request: %v", err))
 			return
 		}
-		archive = req.Archive
+		archive = reqData.Archive
 	}
 
 	err = repo.Create(repoId, archive)
@@ -52,9 +52,6 @@ func createRepo(w http.ResponseWriter, req *http.Request) {
 		}
 		writeError(w, status, message)
 	} else {
-		if config.Verbose {
-			log.Printf("Repo `%s` created", repoId)
-		}
 		w.WriteHeader(http.StatusCreated)
 	}
 }

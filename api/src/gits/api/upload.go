@@ -13,7 +13,6 @@ import (
 func uploadFile(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	repoId := getRepositoryId(vars["organization"], vars["repository"])
-	//(repoId string, path string, req *http.Request, w http.ResponseWriter) {
 	add(repoId,
 		[]repo.AddFile{{Path: vars["file"], Content: req.Body}},
 		queryCommitMessage(req),
