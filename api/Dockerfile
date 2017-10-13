@@ -31,7 +31,7 @@ VOLUME /git
 
 RUN chmod +x /bin/gits && \
     chmod 600 /gits-key && \
-    apk add --no-cache git=${GIT_VERSION} --update-cache --repository http://nl.alpinelinux.org/alpine/edge/main && \
+    apk add --no-cache git=${GIT_VERSION} git-subtree=${GIT_VERSION} --update-cache --repository http://nl.alpinelinux.org/alpine/edge/main && \
     apk add --no-cache tini && \
     rm /var/cache/apk/*
 
