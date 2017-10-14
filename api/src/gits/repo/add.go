@@ -3,16 +3,12 @@ package repo
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
-	"time"
-
-	"gopkg.in/src-d/go-billy.v3/memfs"
-	"gopkg.in/src-d/go-git.v4"
-	plumbingObject "gopkg.in/src-d/go-git.v4/plumbing/object"
-	"gopkg.in/src-d/go-git.v4/storage/memory"
 
 	"gits/config"
 )
@@ -25,62 +21,79 @@ type AddFile struct {
 func Add(repoId string, files []AddFile, commitMessage string) error {
 	dir := filepath.Join(config.RepoDir, repoId)
 
-	storer := memory.NewStorage()
-	fs := memfs.New()
-
-	progress := os.Stdout
-	if !config.Debug {
-		progress = nil
-	}
-
-	cloneOptions := &git.CloneOptions{
-		URL:          dir,
-		SingleBranch: true,
-		Depth:        1,
-		Progress:     progress,
-	}
-	clone, err := git.Clone(storer, fs, cloneOptions)
-	if err != nil && err.Error() != "remote repository is empty" {
-		return fmt.Errorf("Unable to clone Git repo `%s`: %v", dir, err)
-	}
-	worktree, err := clone.Worktree()
+	// temp dir for clone
+	clone, err := ioutil.TempDir("", "gits-")
 	if err != nil {
-		return fmt.Errorf("Unable to open Git repo %s in-memory worktree: %v", dir, err)
+		return fmt.Errorf("Unable to create temporary directory: %v", err)
+	}
+	defer deleteDir(clone)
+
+	// clone
+	cmd := exec.Cmd{
+		Path: gitBinPath(),
+		Dir:  "/",
+		Args: []string{"git", "clone", dir, clone},
+	}
+	gitDebug(&cmd)
+	err = cmd.Run()
+	if err != nil {
+		return fmt.Errorf("Unable to clone `%s` into `%s`: %v", repoId, clone, err)
 	}
 
+	// add files
 	for _, file := range files {
 		fileDir := filepath.Dir(file.Path)
 		if fileDir != "." {
-			err := fs.MkdirAll(fileDir, dirMode)
+			err := os.MkdirAll(filepath.Join(clone, fileDir), dirMode)
 			if err != nil {
 				return err
 			}
 		}
-		out, err := fs.Create(file.Path)
+		fullPath := filepath.Join(clone, file.Path)
+		out, err := os.Create(fullPath)
 		if err != nil {
 			return err
 		}
 		io.Copy(out, file.Content)
 		out.Close()
-		worktree.Add(file.Path)
+
+		cmd = exec.Cmd{
+			Path: gitBinPath(),
+			Dir:  clone,
+			Args: []string{"git", "add", file.Path},
+		}
+		gitDebug(&cmd)
+		err = cmd.Run()
+		if err != nil {
+			return fmt.Errorf("Unable to add `%s` to `%s` clone `%s`: %v", file.Path, repoId, clone, err)
+		}
 	}
 
-	commitOptions := git.CommitOptions{
-		Author: &plumbingObject.Signature{
-			Name:  "Automation Hub",
-			Email: "hub@agilestack.com",
-			When:  time.Now(),
-		},
+	// commit
+	if commitMessage == "" {
+		commitMessage = "Add files"
 	}
-	_, err = worktree.Commit(commitMessage, &commitOptions)
+	cmd = exec.Cmd{
+		Path: gitBinPath(),
+		Dir:  clone,
+		Args: []string{"git", "commit", "-m", commitMessage},
+	}
+	gitDebug(&cmd)
+	err = cmd.Run()
 	if err != nil {
-		return err
+		return fmt.Errorf("Unable to commit in `%s` clone `%s`: %v", repoId, clone, err)
 	}
 
-	pushOptions := git.PushOptions{RemoteName: "origin"}
-	err = clone.Push(&pushOptions)
+	// push
+	cmd = exec.Cmd{
+		Path: gitBinPath(),
+		Dir:  clone,
+		Args: []string{"git", "push"},
+	}
+	gitDebug(&cmd)
+	err = cmd.Run()
 	if err != nil {
-		return err
+		return fmt.Errorf("Unable to push into `%s` from clone `%s`: %v", repoId, clone, err)
 	}
 
 	if config.Verbose {

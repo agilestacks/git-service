@@ -34,6 +34,8 @@ RUN chmod +x /bin/gits && \
     apk add --no-cache git=${GIT_VERSION} git-subtree=${GIT_VERSION} --update-cache --repository http://nl.alpinelinux.org/alpine/edge/main && \
     apk add --no-cache tini && \
     rm /var/cache/apk/*
+RUN git config --global user.email "hub@agilestack.com"
+RUN git config --global user.name "Automation Hub"
 
 EXPOSE 2022
 EXPOSE 8005
