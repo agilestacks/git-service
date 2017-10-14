@@ -24,3 +24,12 @@ func gitSubCommandBinPath(command string) string {
 	}
 	return path
 }
+
+func gitDebug(cmd *exec.Cmd) {
+	if config.Debug {
+		cmd.Stderr = os.Stdout
+		if config.Trace {
+			cmd.Stdout = os.Stdout
+		}
+	}
+}

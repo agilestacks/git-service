@@ -46,15 +46,10 @@ func AddSubtrees(repoId string, subtrees []AddSubtree) error {
 		Dir:  "/",
 		Args: []string{"git", "clone", dir, clone},
 	}
-	if config.Debug {
-		cmd.Stderr = os.Stdout
-		if config.Trace {
-			cmd.Stdout = os.Stdout
-		}
-	}
+	gitDebug(&cmd)
 	err = cmd.Run()
 	if err != nil {
-		return fmt.Errorf("Unable to clone `%s`: %v", repoId, err)
+		return fmt.Errorf("Unable to clone `%s` into `%s`: %v", repoId, clone, err)
 	}
 
 	// check path does not exist
@@ -81,12 +76,7 @@ func AddSubtrees(repoId string, subtrees []AddSubtree) error {
 			Dir:  clone,
 			Args: args,
 		}
-		if config.Debug {
-			cmd.Stderr = os.Stdout
-			if config.Trace {
-				cmd.Stdout = os.Stdout
-			}
-		}
+		gitDebug(&cmd)
 		err = cmd.Run()
 		if err != nil {
 			return fmt.Errorf("Unable to add subtree `%s` ref `%s`: %v", maskAuth(subtree.Repository), subtree.Ref, err)
@@ -99,12 +89,7 @@ func AddSubtrees(repoId string, subtrees []AddSubtree) error {
 		Dir:  clone,
 		Args: []string{"git", "push"},
 	}
-	if config.Debug {
-		cmd.Stderr = os.Stdout
-		if config.Trace {
-			cmd.Stdout = os.Stdout
-		}
-	}
+	gitDebug(&cmd)
 	err = cmd.Run()
 	if err != nil {
 		return fmt.Errorf("Unable to push repo clone `%s`: %v", clone, err)
