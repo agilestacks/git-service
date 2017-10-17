@@ -62,7 +62,7 @@ func Login(username string, password string) (*AuthUser, error) {
 	}
 	var body bytes.Buffer
 	read, err := body.ReadFrom(resp.Body)
-	if read < 4 || err != nil {
+	if read < 2 || err != nil {
 		return nil, fmt.Errorf("Error reading Auth Service response (read %d bytes): %v", read, err)
 	}
 	var user AuthUser
