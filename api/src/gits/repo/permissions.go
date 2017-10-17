@@ -12,6 +12,14 @@ type UserAccess struct {
 	CanWrite bool
 }
 
+func orgId(repo string) (string, error) {
+	slash := strings.Index(repo, "/")
+	if slash < 1 || slash >= len(repo)-1 {
+		return "", fmt.Errorf("Unable to determine stack organization id from repo name `%s`", repo)
+	}
+	return repo[:slash], nil
+}
+
 func templateId(repo string) (string, error) {
 	dash := strings.LastIndex(repo, "-")
 	if dash <= 1 || dash >= len(repo)-1 {
@@ -21,9 +29,21 @@ func templateId(repo string) (string, error) {
 }
 
 func Access(repo string, verb string, users []string) (bool, error) {
+	orgId, err := orgId(repo)
+	if err != nil {
+		return false, err
+	}
 	templateId, err := templateId(repo)
 	if err != nil {
 		return false, err
+	}
+
+	org, err := extapi.OrgById(orgId)
+	if err != nil {
+		return false, fmt.Errorf("Unable to fetch organization `%s` info: %v", orgId, err)
+	}
+	if !org.ShowSource {
+		return false, fmt.Errorf("Organization `%s` has no source code access", orgId)
 	}
 
 	template, err := extapi.TemplateById(templateId)
@@ -63,6 +83,10 @@ func Access(repo string, verb string, users []string) (bool, error) {
 }
 
 func AccessWithLogin(org, repo, verb, username, password string) (bool, error) {
+	orgId, err := orgId(repo)
+	if err != nil {
+		return false, err
+	}
 	templateId, err := templateId(repo)
 	if err != nil {
 		return false, err
@@ -75,6 +99,14 @@ func AccessWithLogin(org, repo, verb, username, password string) (bool, error) {
 
 	if strings.ToLower(org) != strings.ToLower(user.Organization) {
 		return false, fmt.Errorf("User org `%s` does not match repo org `%s`", user.Organization, org)
+	}
+
+	hubOrg, err := extapi.OrgById(orgId)
+	if err != nil {
+		return false, fmt.Errorf("Unable to fetch organization `%s` info: %v", orgId, err)
+	}
+	if !hubOrg.ShowSource {
+		return false, fmt.Errorf("Organization `%s` has no source code access", orgId)
 	}
 
 	template, err := extapi.TemplateById(templateId)
