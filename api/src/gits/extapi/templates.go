@@ -49,7 +49,7 @@ func TemplateById(templateId string) (*Template, error) {
 
 	resp, err := hubApi.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("Error querying Hub user SSH keys: %v", err)
+		return nil, fmt.Errorf("Error querying Hub templates: %v", err)
 	}
 	if config.Trace {
 		log.Printf("%s %s: %s", req.Method, req.URL.String(), resp.Status)
