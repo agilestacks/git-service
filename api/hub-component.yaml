@@ -12,6 +12,7 @@ requires:
 
 parameters:
 - name: component.ingress.fqdn
+- name: component.ingress.protocol
 - name: component.automation-hub.endpoint
 - name: component.auth-service.endpoint
 - name: component.git-service
@@ -54,4 +55,4 @@ outputs:
   value: http://${component.git-service.service}.${component.git-service.namespace}.svc.cluster.local/api/v1
 - name: component.git-service.ingressEndpoint
   brief: Git service ingress
-  value: https://${component.git-service.name}.${component.ingress.fqdn}
+  value: ${component.ingress.protocol}://${component.git-service.name}.${component.ingress.fqdn}
