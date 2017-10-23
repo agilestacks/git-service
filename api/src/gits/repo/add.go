@@ -41,6 +41,7 @@ func Add(repoId string, files []AddFile, commitMessage string) error {
 	}
 
 	// add files
+	filesArgs := make([]string, 0, len(files))
 	for _, file := range files {
 		fileDir := filepath.Dir(file.Path)
 		if fileDir != "." {
@@ -57,16 +58,18 @@ func Add(repoId string, files []AddFile, commitMessage string) error {
 		io.Copy(out, file.Content)
 		out.Close()
 
-		cmd = exec.Cmd{
-			Path: gitBinPath(),
-			Dir:  clone,
-			Args: []string{"git", "add", file.Path},
-		}
-		gitDebug(&cmd)
-		err = cmd.Run()
-		if err != nil {
-			return fmt.Errorf("Unable to add `%s` to `%s` clone `%s`: %v", file.Path, repoId, clone, err)
-		}
+		filesArgs = append(filesArgs, file.Path)
+	}
+	cmd = exec.Cmd{
+		Path: gitBinPath(),
+		Dir:  clone,
+		Args: append([]string{"git", "add"}, filesArgs...),
+	}
+	gitDebug(&cmd)
+	err = cmd.Run()
+	if err != nil {
+		return fmt.Errorf("Unable to add `%s` to `%s` clone `%s`: %v",
+			strings.Join(filesArgs, ","), repoId, clone, err)
 	}
 
 	// commit
