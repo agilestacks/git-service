@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: git
+  name: ${component.git-service.name}
   namespace: ${component.git-service.namespace}
   labels:
     provider: agilestacks.com
@@ -13,5 +13,5 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: ${component.git-service.service}
+          serviceName: ${component.git-service.name}
           servicePort: 80

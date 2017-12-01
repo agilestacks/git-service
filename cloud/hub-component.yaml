@@ -3,14 +3,10 @@ version: 1
 kind: component
 meta:
   name: git-service-cloud
-  brief: Cloud Resources for Authorization and Authentication Serivce
   source:
     dir: .
 
 parameters:
-- name: component.git-service.service
-  default: git-service
-  env: COMPONENT_NAME
 - name: dns.name
   default: default
   env: TF_VAR_name
@@ -20,6 +16,10 @@ parameters:
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
+- name: component.git-service.name
+  default: git-service
+  env: COMPONENT_NAME
+
 outputs:
 - name: component.git-service.image
   brief: Docker image of this component
