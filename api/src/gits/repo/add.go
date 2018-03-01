@@ -84,6 +84,9 @@ func Add(repoId string, files []AddFile, commitMessage string) error {
 	gitDebug(&cmd)
 	err = cmd.Run()
 	if err != nil {
+		if strings.Contains(err.Error(), "nothing to commit, working tree clean") {
+			return nil
+		}
 		return fmt.Errorf("Unable to commit in `%s` clone `%s`: %v", repoId, clone, err)
 	}
 
