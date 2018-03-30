@@ -18,9 +18,9 @@ parameters:
 - name: component.git-service
   parameters:
   - name: name
-    default: git
+    value: git
   - name: namespace
-    default: automation-hub
+    value: automation-hub
     env:  NAMESPACE
   - name: image
     env:  IMAGE
@@ -33,16 +33,14 @@ parameters:
   - name: privatekey.base64Encoded
     kind: user
   - name: volume.size
-    default: 100Gi
+    value: 100Gi
   - name: volume.path
-    default: /mnt/nfs/gits/vol-00
+    value: /mnt/nfs/gits/vol-00
   - name: bucket.region
-    default: us-east-2
+    value: us-east-2
   - name: bucket.name
-    default: agilestacks-distribution
+    value: agilestacks-distribution
 - name: dns.domain
-  brief: DNS domain
-  kind: tech
   env: DOMAIN_NAME
 
 templates:
