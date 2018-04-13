@@ -25,13 +25,14 @@ ENV BUCKET "terraform.agilestacks.com"
 
 COPY --from=builder /go/src/gits/gits /bin/gits
 
-ADD  https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant /gits-key
+ADD https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant /gits-key
 
 VOLUME /git
 
 RUN chmod +x /bin/gits && \
     chmod 600 /gits-key && \
     apk add --no-cache git=${GIT_VERSION} git-subtree=${GIT_VERSION} --update-cache --repository http://nl.alpinelinux.org/alpine/edge/main && \
+    apk add --no-cache aws-cli --update-cache --repository http://nl.alpinelinux.org/alpine/edge/testing && \
     apk add --no-cache tini && \
     rm /var/cache/apk/*
 RUN git config --global user.email "hub@agilestack.com"

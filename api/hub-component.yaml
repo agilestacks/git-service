@@ -11,6 +11,10 @@ requires:
 - kubernetes
 
 parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: cloud.bucket # for backup
+  env: CLOUD_BUCKET
 - name: component.ingress.fqdn
 - name: component.ingress.protocol
 - name: component.automation-hub.endpoint
@@ -21,7 +25,7 @@ parameters:
     value: git
   - name: namespace
     value: automation-hub
-    env:  NAMESPACE
+    env: NAMESPACE
   - name: image
     env:  IMAGE
   - name: gitApiSecret
@@ -36,12 +40,16 @@ parameters:
     value: 100Gi
   - name: volume.path
     value: /mnt/nfs/gits/vol-00
+  - name: repos
+    value: /git
+    env: REPOS_PATH
   - name: bucket.region
     value: us-east-2
   - name: bucket.name
     value: agilestacks-distribution
-- name: dns.domain
-  env: DOMAIN_NAME
+  - name: snapshot
+    empty: allow
+    env: RESTORE_SNAPSHOT
 
 templates:
   files: ["templates/*.template"]
