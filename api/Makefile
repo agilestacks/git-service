@@ -89,6 +89,10 @@ backup: find-pod
 	@echo
 .PHONY: backup
 
+connect: find-pod
+	$(kubectl) exec -ti $(GITS_POD) /bin/sh
+.PHONY: connect
+
 ifneq ($(RESTORE_SNAPSHOT),)
 restore: find-pod
 	$(kubectl) exec $(GITS_POD) -- /bin/sh -c \
