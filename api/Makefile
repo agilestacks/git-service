@@ -92,7 +92,7 @@ backup: find-pod
 ifneq ($(RESTORE_SNAPSHOT),)
 restore: find-pod
 	$(kubectl) exec $(GITS_POD) -- /bin/sh -c \
-		"aws s3 cp $(RESTORE_SNAPSHOT) - | tar xjf - -C $(REPOS_PATH)"
+		"aws s3 cp $(RESTORE_SNAPSHOT) - | tar xjpf - -C $(REPOS_PATH)"
 .PHONY: restore
 endif
 
