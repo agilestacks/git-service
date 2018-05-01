@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -31,5 +32,15 @@ func gitDebug(cmd *exec.Cmd) {
 		if config.Trace {
 			cmd.Stdout = os.Stdout
 		}
+	}
+}
+
+func gitDebug2(cmd *exec.Cmd, stdoutCopy io.Writer) {
+	if config.Trace {
+		stdoutCopy = io.MultiWriter(stdoutCopy, os.Stdout)
+	}
+	cmd.Stdout = stdoutCopy
+	if config.Debug {
+		cmd.Stderr = os.Stdout
 	}
 }

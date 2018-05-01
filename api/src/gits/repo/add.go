@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -81,10 +82,11 @@ func Add(repoId string, files []AddFile, commitMessage string) error {
 		Dir:  clone,
 		Args: []string{"git", "commit", "-m", commitMessage},
 	}
-	gitDebug(&cmd)
+	var stdoutBuffer bytes.Buffer
+	gitDebug2(&cmd, &stdoutBuffer)
 	err = cmd.Run()
 	if err != nil {
-		if strings.Contains(err.Error(), "nothing to commit, working tree clean") {
+		if strings.Contains(stdoutBuffer.String(), "nothing to commit, working tree clean") {
 			return nil
 		}
 		return fmt.Errorf("Unable to commit in `%s` clone `%s`: %v", repoId, clone, err)
