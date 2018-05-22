@@ -54,7 +54,6 @@ spec:
         - "2022"
         - "-repo_dir"
         - "${component.git-service.repos}"
-        - "-trace"
         - "-debug"
         - "-blobs"
         - "s3://${component.git-service.bucket.name}/"
