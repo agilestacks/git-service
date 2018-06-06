@@ -50,6 +50,9 @@ parameters:
   - name: snapshot
     empty: allow
     env: RESTORE_SNAPSHOT
+  # setup as parameter to allow override from stack params
+  - name: ingressEndpoint
+    value: ${component.ingress.protocol}://${component.git-service.name}.${component.ingress.fqdn}
 
 templates:
   files: ["templates/*.template"]
@@ -60,4 +63,3 @@ outputs:
   value: http://${component.git-service.name}.${component.git-service.namespace}.svc.cluster.local/api/v1
 - name: component.git-service.ingressEndpoint
   brief: Git service ingress
-  value: ${component.ingress.protocol}://${component.git-service.name}.${component.ingress.fqdn}
