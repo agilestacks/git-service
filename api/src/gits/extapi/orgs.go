@@ -21,13 +21,13 @@ func OrgById(orgId string) (*Org, error) {
 		return &Org{Id: "ASI", ShowSource: true}, nil
 	}
 
-	orgs := fmt.Sprintf("%s/organizations/%s", config.HubApiEndpoint, url.QueryEscape(orgId))
+	orgs := fmt.Sprintf("%s/organizations/%s", config.SubsApiEndpoint, url.QueryEscape(orgId))
 	req, err := http.NewRequest("GET", orgs, nil)
 	if config.HubApiSecret != "" {
-		req.Header.Add("X-API-Secret", config.HubApiSecret)
+		req.Header.Add("X-API-Secret", config.SubsApiSecret)
 	}
 
-	resp, err := hubApi.Do(req)
+	resp, err := subsApi.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("Error querying Hub organizations: %v", err)
 	}

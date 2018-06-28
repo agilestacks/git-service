@@ -12,9 +12,10 @@ import (
 
 func Parse() {
 	var blobsFrom string
-	var apiSecretEnvVar, hubApiSecretEnvVar, authApiSecretEnvVar string
+	var apiSecretEnvVar, hubApiSecretEnvVar, authApiSecretEnvVar, subsApiSecretEnvVar string
 	var hubApiEndpoint, hubApiEndpointEnvVar, hubApiHostEnvVar, hubApiPortEnvVar string
 	var authApiEndpoint, authApiEndpointEnvVar, authApiHostEnvVar, authApiPortEnvVar string
+	var subsApiEndpoint, subsApiEndpointEnvVar, subsApiHostEnvVar, subsApiPortEnvVar string
 
 	flag.BoolVar(&config.Verbose, "verbose", true, "Print progress if set")
 	flag.BoolVar(&config.Debug, "debug", false, "Print debug information if set")
@@ -29,6 +30,7 @@ func Parse() {
 
 	flag.StringVar(&hubApiSecretEnvVar, "hub_api_secret_env", "HUB_API_SECRET", "Environment variable to get secret for Automation Hub HTTP API")
 	flag.StringVar(&authApiSecretEnvVar, "auth_api_secret_env", "AUTH_API_SECRET", "Environment variable to get secret for Auth Service HTTP API")
+	flag.StringVar(&subsApiSecretEnvVar, "subs_api_secret_env", "SUBS_API_SECRET", "Environment variable to get secret for Subscriptions Service HTTP API")
 
 	flag.BoolVar(&config.NoExtApiCalls, "no_ext_api_calls", false, "Emulate external calls to Automation Hub and Auth Service with internal stubs")
 	flag.StringVar(&hubApiEndpointEnvVar, "hub_api_endpoint_env", "HUB_SERVICE_ENDPOINT", "Environment variable to get Automation Hub HTTP API endpoint")
@@ -37,9 +39,13 @@ func Parse() {
 	flag.StringVar(&authApiEndpointEnvVar, "auth_api_endpoint_env", "AUTH_SERVICE_ENDPOINT", "Environment variable to get Auth Service HTTP API endpoint")
 	flag.StringVar(&authApiHostEnvVar, "auth_api_host_env", "AUTH_SERVICE_HOST", "Environment variable to get Auth Service HTTP API hostname / IP")
 	flag.StringVar(&authApiPortEnvVar, "auth_api_port_env", "AUTH_SERVICE_PORT", "Environment variable to get Auth Service HTTP API port")
+	flag.StringVar(&subsApiEndpointEnvVar, "subs_api_endpoint_env", "SUBS_SERVICE_ENDPOINT", "Environment variable to get Subscriptions Service HTTP API endpoint")
+	flag.StringVar(&subsApiHostEnvVar, "subs_api_host_env", "SUBS_SERVICE_HOST", "Environment variable to get Subscriptions Service HTTP API hostname / IP")
+	flag.StringVar(&subsApiPortEnvVar, "subs_api_port_env", "SUBS_SERVICE_PORT", "Environment variable to get Subscriptions Service HTTP API port")
 
 	flag.StringVar(&hubApiEndpoint, "hub_api_endpoint", "", "Automation Hub HTTP API endpoint (overrides -hub_api_*_env / HUB_SERVICE_*)")
 	flag.StringVar(&authApiEndpoint, "auth_api_endpoint", "", "Auth Service HTTP API endpoint (overrides -auth_api_*_env / AUTH_SERVICE_*)")
+	flag.StringVar(&subsApiEndpoint, "subs_api_endpoint", "", "Subscriptions Service HTTP API endpoint (overrides -subs_api_*_env / SUBS_SERVICE_*)")
 
 	flag.StringVar(&config.AwsRegion, "aws_region", "", "The source archive bucket AWS region")
 	flag.StringVar(&config.AwsProfile, "aws_profile", "", "The AWS credentials profile of ~/.aws/credentials")
@@ -64,9 +70,11 @@ Flags:
 	if !config.NoExtApiCalls {
 		config.HubApiSecret = lookupEnv(hubApiSecretEnvVar, "hub_api_secret_env")
 		config.AuthApiSecret = lookupEnv(authApiSecretEnvVar, "auth_api_secret_env")
+		config.SubsApiSecret = lookupEnv(subsApiSecretEnvVar, "subs_api_secret_env")
 
 		config.HubApiEndpoint = lookupEndpoint(hubApiEndpoint, hubApiEndpointEnvVar, hubApiHostEnvVar, hubApiPortEnvVar, "hub")
 		config.AuthApiEndpoint = lookupEndpoint(authApiEndpoint, authApiEndpointEnvVar, authApiHostEnvVar, authApiPortEnvVar, "auth")
+		config.SubsApiEndpoint = lookupEndpoint(subsApiEndpoint, subsApiEndpointEnvVar, subsApiHostEnvVar, subsApiPortEnvVar, "subs")
 	}
 
 	if blobsFrom != "" {

@@ -29,6 +29,8 @@ spec:
           value: ${component.automation-hub.endpoint}
         - name: AUTH_SERVICE_ENDPOINT
           value: ${component.auth-service.endpoint}
+        - name: SUBS_SERVICE_ENDPOINT
+          value: ${component.subscriptions-service.endpoint}
         - name: GIT_API_SECRET
           valueFrom:
             secretKeyRef:
@@ -44,6 +46,11 @@ spec:
             secretKeyRef:
               name: gits-secrets
               key:  auth-api-secret
+        - name: SUBS_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: gits-secrets
+              key:  subs-api-secret
         args:
         - "gits"
         - "-aws_region"

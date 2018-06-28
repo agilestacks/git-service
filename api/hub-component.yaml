@@ -19,6 +19,7 @@ parameters:
 - name: component.ingress.protocol
 - name: component.automation-hub.endpoint
 - name: component.auth-service.endpoint
+- name: component.subscriptions-service.endpoint
 - name: component.git-service
   parameters:
   - name: name
@@ -33,6 +34,8 @@ parameters:
   - name: hubApiSecret
     kind: user
   - name: authApiSecret
+    kind: user
+  - name: subsApiSecret
     kind: user
   - name: privatekey.base64Encoded
     kind: user

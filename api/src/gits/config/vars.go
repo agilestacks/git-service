@@ -27,8 +27,10 @@ var (
 	NoExtApiCalls   bool
 	HubApiSecret    string
 	AuthApiSecret   string
+	SubsApiSecret   string
 	HubApiEndpoint  string
 	AuthApiEndpoint string
+	SubsApiEndpoint string
 
 	AwsRegion                string
 	AwsProfile               string
