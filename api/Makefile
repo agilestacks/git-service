@@ -17,7 +17,7 @@ NAMESPACE       ?= automation-hub
 
 CLOUD_BUCKET    ?= files.$(DOMAIN_NAME)
 REPOS_PATH      ?= /git
-TS              ?= $(shell date +"%Y-%m-%d-%H-%M-%S")
+TS              := $(shell date +"%Y-%m-%d-%H-%M-%S")
 BACKUP_SNAPSHOT ?= s3://$(CLOUD_BUCKET)/backup/git-service/$(COMPONENT_NAME)/$(TS).tar.bz
 
 kubectl         ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
