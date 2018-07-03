@@ -12,7 +12,7 @@ RUN go build -v gits
 RUN ls /go/src/gits
 
 
-FROM alpine
+FROM alpine:3.7
 
 ARG GIT_VERSION="2.18.0-r0"
 
@@ -31,6 +31,7 @@ VOLUME /git
 
 RUN chmod +x /bin/gits && \
     chmod 600 /gits-key && \
+    apk update && apk upgrade && \
     apk add --no-cache git=${GIT_VERSION} git-subtree=${GIT_VERSION} --update-cache --repository http://nl.alpinelinux.org/alpine/edge/main && \
     apk add --no-cache aws-cli --update-cache --repository http://nl.alpinelinux.org/alpine/edge/testing && \
     apk add --no-cache tini && \
