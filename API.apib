@@ -92,13 +92,14 @@ TAR BZIP2 and GZIP archives are supported. BZIP2 by default if `archive` suffix 
 + Response 504
 
 
-### Upload file [PUT /repositories/{repositoryId}/commit/file/path{?message}]
+### Upload file [PUT /repositories/{repositoryId}/commit/file/path{?message}{?mode}]
 
 Upload a single file and commit to the repository.
 
 + Parameters
     + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
     + message: `log entry` (string, optional) - Git commit log message
+    + mode: `0755` (string, optional) - File mode in octal
 
 + Request
 
@@ -142,6 +143,7 @@ Upload multiple files and commit to the repository.
 
             --boundary
             Content-Disposition: form-data; name="hub.yaml"; filename="hub.yaml"
+            Mode: 0755
 
             ...
             --boundary

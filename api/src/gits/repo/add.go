@@ -17,6 +17,7 @@ import (
 type AddFile struct {
 	Path    string
 	Content io.Reader
+	Mode    os.FileMode
 }
 
 func Add(repoId string, files []AddFile, commitMessage string) error {
@@ -52,7 +53,11 @@ func Add(repoId string, files []AddFile, commitMessage string) error {
 			}
 		}
 		fullPath := filepath.Join(clone, file.Path)
-		out, err := os.Create(fullPath)
+		mode := file.Mode
+		if mode == 0 {
+			mode = 0644
+		}
+		out, err := os.OpenFile(fullPath, os.O_CREATE|os.O_WRONLY, mode)
 		if err != nil {
 			return err
 		}
@@ -107,7 +112,11 @@ func Add(repoId string, files []AddFile, commitMessage string) error {
 	if config.Verbose {
 		added := make([]string, 0, len(files))
 		for _, file := range files {
-			added = append(added, file.Path)
+			mode := ""
+			if file.Mode > 0 {
+				mode = fmt.Sprintf(" (%04o)", file.Mode)
+			}
+			added = append(added, file.Path+mode)
 		}
 		log.Printf("Added `%s` to `%s`", strings.Join(added, ", "), repoId)
 	}
