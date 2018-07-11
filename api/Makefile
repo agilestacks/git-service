@@ -105,11 +105,8 @@ delete-pod: find-pod
 .PHONY: delete-pod
 
 clean:
-	@yes n | rm -rf .cache | true
-	@yes n | rm -rf pkg | true
-	@yes n | rm -rf bin/darwin | true
-	@yes n | rm -rf linux/darwin | true
-	@find src -not -path "*src/gits*" -not -path "src" -type d -maxdepth 1 | xargs rm -rf
+	-rm -rf .cache pkg bin/darwin bin/linux
+	-@find src -not -path "*src/gits*" -not -path "src" -type d -maxdepth 1 | xargs rm -rf
 .PHONY: clean
 
 build:
