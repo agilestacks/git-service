@@ -29,10 +29,17 @@ install:
 	@go get -u github.com/kardianos/govendor
 .PHONY: install
 
-govendor:
+govendor-list:
 	@cd src/gits && $(GOBIN)/govendor list
+.PHONY: govendor-list
+
+govendor: govendor-list
 	@cd src/gits && $(GOBIN)/govendor sync
 .PHONY: govendor
+
+govendor-add: govendor-list
+	@cd src/gits && $(GOBIN)/govendor add +e
+.PHONY: govendor-add
 
 compile: govendor
 	@$(GOBIN)/gox -rebuild \
