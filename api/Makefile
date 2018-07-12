@@ -112,7 +112,9 @@ delete-pod: find-pod
 .PHONY: delete-pod
 
 clean:
-	-rm -rf .cache pkg bin/darwin bin/linux
+	-@rm -rf .cache pkg bin/darwin bin/linux \
+		src/github.com src/golang.org src/gopkg.in \
+		src/hub/vendor/github.com src/hub/vendor/golang.org src/hub/vendor/gopkg.in
 	-@find src -not -path "*src/gits*" -not -path "src" -type d -maxdepth 1 | xargs rm -rf
 .PHONY: clean
 
