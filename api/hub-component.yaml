@@ -13,8 +13,8 @@ requires:
 parameters:
 - name: dns.domain
   env: DOMAIN_NAME
-- name: cloud.bucket # for backup
-  env: CLOUD_BUCKET
+- name: terraform.bucket.name
+- name: terraform.bucket.region
 - name: component.ingress.fqdn
 - name: component.ingress.protocol
 - name: component.automation-hub.endpoint
@@ -56,7 +56,12 @@ parameters:
   # setup as parameter to allow override from stack params
   - name: ingressEndpoint
     value: ${component.ingress.protocol}://${component.git-service.name}.${component.ingress.fqdn}
-
+  - name: backup.bucket
+    value: ${terraform.bucket.name}
+    env: BACKUP_BUCKET
+  - name: backup.region
+    value: ${terraform.bucket.region}
+    env: BACKUP_REGION
 templates:
   files: ["templates/*.template"]
 

@@ -15,10 +15,11 @@ IMAGE           ?= $(REGISTRY)/agilestacks/$(DOMAIN_NAME)/git-service
 IMAGE_VERSION   ?= $(shell git rev-parse HEAD | colrm 7)
 NAMESPACE       ?= automation-hub
 
-CLOUD_BUCKET    ?= files.$(DOMAIN_NAME)
+BACKUP_BUCKET   ?= files.$(DOMAIN_NAME)
+BACKUP_REGION   ?= us-east-2
 REPOS_PATH      ?= /git
 TS              := $(shell date +"%Y-%m-%d-%H-%M-%S")
-BACKUP_SNAPSHOT ?= s3://$(CLOUD_BUCKET)/backup/git-service/$(COMPONENT_NAME)/$(TS).tar.bz
+BACKUP_SNAPSHOT ?= s3://$(CLOUD_BUCKET)/backup/$(DOMAIN_NAME)/git-service/$(COMPONENT_NAME)/$(TS).tar.bz
 
 kubectl         ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 docker          ?= docker
@@ -89,7 +90,7 @@ find-pod:
 
 backup: find-pod
 	$(kubectl) exec $(GITS_POD) -- /bin/sh -c \
-		"tar cjf - -C $(REPOS_PATH) . | aws s3 cp - $(BACKUP_SNAPSHOT)"
+		"tar cjf - -C $(REPOS_PATH) . | aws --region=$(BACKUP_REGION) s3 cp - $(BACKUP_SNAPSHOT)"
 	@echo Outputs:
 	@echo kind = git-service
 	@echo component.git-service.snapshot = $(BACKUP_SNAPSHOT)
