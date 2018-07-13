@@ -57,7 +57,7 @@ func Add(repoId string, files []AddFile, commitMessage string) error {
 		if mode == 0 {
 			mode = 0644
 		}
-		out, err := os.OpenFile(fullPath, os.O_CREATE|os.O_WRONLY, mode)
+		out, err := os.OpenFile(fullPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, mode)
 		if err != nil {
 			return err
 		}
