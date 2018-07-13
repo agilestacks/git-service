@@ -13,8 +13,6 @@ requires:
 parameters:
 - name: dns.domain
   env: DOMAIN_NAME
-- name: terraform.bucket.name
-- name: terraform.bucket.region
 - name: component.ingress.fqdn
 - name: component.ingress.protocol
 - name: component.automation-hub.endpoint
