@@ -49,4 +49,4 @@ undeploy: init
 	cd .terraform/$(TF_VAR_name).$(TF_VAR_base_domain) && \
 		$(terraform) plan $(TF_OPTS) -destroy -refresh=true -module-depth=-1 -out=terraform.tfplan
 	$(MAKE) apply
-.PHONY: undeploy_this
+.PHONY: undeploy
