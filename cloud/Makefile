@@ -11,10 +11,10 @@ export TF_LOG_PATH        ?= .terraform/$(TF_VAR_name).$(TF_VAR_base_domain).log
 export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
 
-export STATE_BUCKET   ?= terraform.agilestacks.com
-export STATE_REGION   ?= us-east-1
+STATE_BUCKET ?= terraform.agilestacks.com
+STATE_REGION ?= us-east-1
 
-export terraform          ?= terraform
+terraform ?= terraform
 
 deploy: init plan apply
 

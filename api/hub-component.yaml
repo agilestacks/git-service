@@ -26,7 +26,7 @@ parameters:
     value: automation-hub
     env: NAMESPACE
   - name: image
-    env:  IMAGE
+    env: IMAGE
   - name: gitApiSecret
     kind: user
   - name: hubApiSecret
@@ -60,6 +60,7 @@ parameters:
   - name: backup.region
     value: ${terraform.bucket.region}
     env: BACKUP_REGION
+
 templates:
   files: ["templates/*.template"]
 
