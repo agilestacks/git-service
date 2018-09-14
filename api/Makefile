@@ -6,9 +6,7 @@ export PATH              := $(GOBIN):$(PATH)
 
 export AWS_DEFAULT_REGION ?= us-east-2
 
-NAME            ?= dev
-BASE_DOMAIN     ?= kubernetes.delivery
-DOMAIN_NAME     ?= $(NAME).$(BASE_DOMAIN)
+DOMAIN_NAME     ?= dev.kubernetes.deliver
 COMPONENT_NAME  ?= git-service
 REGISTRY        ?= $(subst https://,,$(lastword $(shell aws ecr get-login --region $(AWS_DEFAULT_REGION))))
 IMAGE           ?= $(REGISTRY)/agilestacks/$(DOMAIN_NAME)/git-service
