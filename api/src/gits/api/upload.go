@@ -103,6 +103,9 @@ func queryCommitMessage(req *http.Request) string {
 
 func queryFileMode(req *http.Request) (os.FileMode, error) {
 	strMode := req.URL.Query().Get("mode")
+	if strMode == "" {
+		return 0, nil
+	}
 	mode, err := strconv.ParseUint(strMode, 8, 32)
 	if err != nil {
 		return 0, fmt.Errorf("Mode %q: %v", strMode, err)
