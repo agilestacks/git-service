@@ -57,6 +57,38 @@ URL names are lowercased, non-alphanumeric characters replaced by dashes `-`.
 + Response 403
 
 
+### Retrieve Repository status [GET /repositories/{repositoryId}/status{?ref}]
+
++ Parameters
+    + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
+    + ref: `master` - branch, tag, or ref to retrieve status of
+
++ Request
+
+    + Headers
+
+            X-API-Secret: git-api-secret
+
++ Response 200 (application/json; charset=utf-8)
+
+            {
+                "commit": "8d5787cbf266b6d64e12ee5b92aaf2b1cbe95090",
+                "ref": "refs/heads/master"
+            }
+
++ Response 400
+
++ Response 404
+
++ Response 403
+
++ Response 409 (application/json; charset=utf-8)
+
+            {
+                "error": "Ref <ref> refer to multiple refs ..."
+            }
+
+
 ### Create Repository [PUT]
 
 `archive` is optional. If supplied the content of the repository is unpacked from the archive, so it

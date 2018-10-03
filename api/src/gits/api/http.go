@@ -125,6 +125,8 @@ func getRouter() http.Handler {
 		Methods("POST")
 	s.Handle("/log", cmw(http.HandlerFunc(sendRepoLog))).
 		Methods("GET")
+	s.Handle("/status", cmw(http.HandlerFunc(sendRepoStatus))).
+		Methods("GET")
 
 	s = r.PathPrefix("/repo/{organization}/{repository}").Subrouter()
 	cmw = mw(withLogger, withAuth, withAllowedGitService, withRepoExist)
