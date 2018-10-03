@@ -168,18 +168,24 @@ func listen(server *http.Server) {
 }
 
 func writeError(w http.ResponseWriter, status int, message string) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(status)
+	if config.Debug {
+		log.Printf("Error %d HTTP: %s", status, message)
+	}
 
 	b, err := json.Marshal(struct {
 		Error string `json:"error"`
 	}{message})
 
 	if err != nil {
-		log.Println("unable to marshall json", err)
-		b = []byte(err.Error())
+		msg := fmt.Sprintf("Unable to marshall JSON: %v", err)
+		log.Print(msg)
+		b = []byte(msg)
+		w.Header().Set("Content-Type", "text/plain")
+		status = http.StatusInternalServerError
+	} else {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	}
-
+	w.WriteHeader(status)
 	w.Write(b)
 }
 
