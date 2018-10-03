@@ -6,6 +6,10 @@ bin/darwin
 .cache
 .envrc
 
+src/github.com
+src/golang.org
+src/gopkg.in
+
 !/src/gits/vendor/
 /src/gits/vendor/*
 !/src/gits/vendor/vendor.json
