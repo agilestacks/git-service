@@ -32,10 +32,9 @@ VOLUME /git
 RUN chmod +x /bin/gits && \
     chmod 600 /gits-key && \
     apk update && apk upgrade && \
-    apk add --no-cache expat && \
+    apk add --no-cache expat tini && \
     apk add --no-cache git=${GIT_VERSION} git-subtree=${GIT_VERSION} --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main && \
     apk add --no-cache aws-cli --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
-    apk add --no-cache tini && \
     rm /var/cache/apk/*
 RUN git config --global user.email "hub@agilestack.com"
 RUN git config --global user.name "Automation Hub"
