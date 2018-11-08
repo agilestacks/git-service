@@ -4,12 +4,11 @@ RUN apk update && apk upgrade && \
     apk add --no-cache git
 
 WORKDIR /go/src/gits
-COPY src/gits /go/src/gits
-
 RUN go get github.com/kardianos/govendor
+COPY src/gits/vendor /go/src/gits/vendor
 RUN /go/bin/govendor sync
+COPY src/gits /go/src/gits
 RUN go build -v gits
-RUN ls /go/src/gits
 
 
 FROM alpine:3.8
@@ -23,14 +22,11 @@ ENV HUB_SERVICE_ENDPOINT "*** unset ***"
 ENV AUTH_SERVICE_ENDPOINT "*** unset ***"
 ENV BUCKET "terraform.agilestacks.com"
 
-COPY --from=builder /go/src/gits/gits /bin/gits
-
 ADD https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant /gits-key
 
 VOLUME /git
 
-RUN chmod +x /bin/gits && \
-    chmod 600 /gits-key && \
+RUN chmod 600 /gits-key && \
     apk update && apk upgrade && \
     apk add --no-cache expat tini && \
     apk add --no-cache git=${GIT_VERSION} git-subtree=${GIT_VERSION} --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main && \
@@ -41,6 +37,8 @@ RUN git config --global user.name "Automation Hub"
 
 EXPOSE 2022
 EXPOSE 8005
+
+COPY --from=builder /go/src/gits/gits /bin/gits
 
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["gits", "-blobs", "s3://$BUCKET/"]
