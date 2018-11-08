@@ -14,7 +14,7 @@ RUN ls /go/src/gits
 
 FROM alpine:3.8
 
-ARG GIT_VERSION="2.19.1-r0"
+ARG GIT_VERSION="2.19.1-r1"
 
 ENV GIT_API_SECRET "*** unset ***"
 ENV HUB_API_SECRET "*** unset ***"
