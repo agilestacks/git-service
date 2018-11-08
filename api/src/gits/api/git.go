@@ -43,22 +43,36 @@ func checkUserRepoAccess(req *http.Request) bool {
 	service := vars["service"]
 
 	deploymentKey := ""
-	if len(username) == deploymentKeyHexLen {
+	if len(username) >= deploymentKeyMinHexLen {
 		deploymentKey = username
-	} else if len(password) == deploymentKeyHexLen {
+	} else if len(password) >= deploymentKeyMinHexLen {
 		deploymentKey = password
 	}
 
 	hasAccess := false
 
 	if deploymentKey != "" {
-		decodedUsername, decodeErr := decodeDeploymentKey(deploymentKey)
+		decodedUsername, decodedSubject, decodeErr := decodeDeploymentKey(deploymentKey)
 		var accessErr error
 		hasAccess, accessErr = repo.Access(repoId, service, []string{decodedUsername})
 		if decodeErr != nil || accessErr != nil {
 			log.Printf("No %s access to `%s` for token `%s...` user `%s`: %v; %v",
 				service, repoId, deploymentKey[0:8], decodedUsername, decodeErr, accessErr)
 			return false
+		}
+		if hasAccess && decodedSubject != "" {
+			hasAccess = false
+			subjectPrefix := "git:"
+			if len(decodedSubject) > len(subjectPrefix) {
+				i := strings.Index(decodedSubject, subjectPrefix)
+				if i == 0 {
+					subjectId := decodedSubject[len(subjectPrefix):]
+					templateId, err := repo.TemplateId(repoId)
+					if err == nil && templateId == subjectId {
+						hasAccess = true
+					}
+				}
+			}
 		}
 	} else {
 		var err error

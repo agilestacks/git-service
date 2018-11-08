@@ -20,7 +20,7 @@ func orgId(repo string) (string, error) {
 	return repo[:slash], nil
 }
 
-func templateId(repo string) (string, error) {
+func TemplateId(repo string) (string, error) {
 	dash := strings.LastIndex(repo, "-")
 	if dash <= 1 || dash >= len(repo)-1 {
 		return "", fmt.Errorf("Unable to determine stack template id from repo name `%s`", repo)
@@ -33,7 +33,7 @@ func Access(repo string, verb string, users []string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	templateId, err := templateId(repo)
+	templateId, err := TemplateId(repo)
 	if err != nil {
 		return false, err
 	}
@@ -87,7 +87,7 @@ func AccessWithLogin(org, repo, verb, username, password string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	templateId, err := templateId(repo)
+	templateId, err := TemplateId(repo)
 	if err != nil {
 		return false, err
 	}
