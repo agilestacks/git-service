@@ -23,10 +23,11 @@ URL names are lowercased, non-alphanumeric characters replaced by dashes `-`.
     + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
 
 
-### Retrieve Repository Git Log [GET /repositories/{repositoryId}/log]
+### Retrieve Repository Git Log [GET /repositories/{repositoryId}/log{?ref}]
 
 + Parameters
     + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
+    + ref: `master` - branch, tag, or ref to retrieve log of
 
 + Request
 

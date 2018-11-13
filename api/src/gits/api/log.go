@@ -14,7 +14,9 @@ func sendRepoLog(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	repoId := getRepositoryId(vars["organization"], vars["repository"])
 
-	logBytes, err := repo.Log(repoId)
+	ref := req.URL.Query().Get("ref")
+
+	logBytes, err := repo.Log(repoId, ref)
 	if err != nil {
 		message := fmt.Sprintf("Unable to obtain Git repo `%s` log: %v", repoId, err)
 		log.Print(message)

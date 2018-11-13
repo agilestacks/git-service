@@ -8,7 +8,10 @@ import (
 	"gits/config"
 )
 
-func Log(repoId string) ([]byte, error) {
+func Log(repoId, ref string) ([]byte, error) {
+	if ref == "" {
+		ref = "master"
+	}
 	dir := filepath.Join(config.RepoDir, repoId)
 	cmd := exec.Cmd{
 		Path: gitBinPath(),
