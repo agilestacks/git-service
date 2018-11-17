@@ -14,9 +14,11 @@ Please read [design](https://github.com/agilestacks/git-service/blob/master/READ
 ## Repository [/repositories/{repositoryId}]
 
 `repositoryId` format is `<organization>/<template name>-<template id>`. Template `id` is used
-by Git SSH server to obtain repository permissions. SSH key offered by client is used to find
-users, then traverse to teams, then check for (1) template owner and (2) teams permissions on the
-template.
+by Git SSH and HTTP servers to obtain repository permissions.
+SSH key offered by client is used to find matching users. For HTTP protocol Deployment key is
+decoded to determine user id. Alternatively HTTP Basic auth username and password is used with
+Auth Service to check user login. Then user' teams are traversed to check for (1) template owner
+and (2) teams permissions on the template.
 URL names are lowercased, non-alphanumeric characters replaced by dashes `-`.
 
 + Parameters
@@ -95,9 +97,15 @@ URL names are lowercased, non-alphanumeric characters replaced by dashes `-`.
 
 ### Create Repository [PUT]
 
+`remote` is optional. If supplied the content of the remote repository became root of the new repo.
+`squash` deletes history creating a repository with single initial commit. If supplied the `message`
+is used as initial commit message.
+
 `archive` is optional. If supplied the content of the repository is unpacked from the archive, so it
-must be a bare git repo at root of the archive. Otherwise an empty repository is initialized.
-TAR BZIP2 and GZIP archives are supported. BZIP2 by default if `archive` suffix is not `gz`.
+must be a bare git repo at root of the archive. TAR BZIP2 and GZIP archives are supported. BZIP2 by
+default if `archive` suffix is not `gz`.
+
+Otherwise an empty repository is initialized.
 
 + Request (application/json; charset=utf-8)
 
@@ -108,6 +116,11 @@ TAR BZIP2 and GZIP archives are supported. BZIP2 by default if `archive` suffix 
     + Body
 
             {
+                "remote": "git@github.com:agilestacks/components.git",
+                "ref": "master",
+                "squash": false,
+                "message": "Initial squash",
+
                 "archive": "s3://agilestacks/blobs/stack-k8s-aws-1.2.5664.tar.bz2"
             }
 

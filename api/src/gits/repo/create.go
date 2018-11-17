@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -12,7 +13,15 @@ import (
 	"gits/s3"
 )
 
-func Create(repoId string, archive string) error {
+type CreateRequest struct {
+	Remote  string
+	Ref     string
+	Squash  bool
+	Message string
+	Archive string
+}
+
+func Create(repoId string, req *CreateRequest) error {
 	dir := filepath.Join(config.RepoDir, repoId)
 	_, err := os.Stat(dir)
 	if err == nil {
@@ -22,10 +31,16 @@ func Create(repoId string, archive string) error {
 	if err != nil {
 		return err
 	}
-	if archive == "" {
-		err = initBare(dir)
+	if req != nil && req.Archive != "" {
+		err = initWithArchive(dir, req.Archive)
+	} else if req != nil && req.Remote != "" {
+		if req.Squash {
+			err = errors.New("Squash not implemented")
+		} else {
+			err = initWithRemote(dir, req.Remote, req.Ref)
+		}
 	} else {
-		err = initWithArchive(dir, archive)
+		err = initBare(dir)
 	}
 	if err != nil {
 		deleteDir(dir)
@@ -43,6 +58,7 @@ func initBare(dir string) error {
 		Dir:  dir,
 		Args: []string{"git", "init", "--bare", "."},
 	}
+	gitDebug(&cmd)
 	_, err := cmd.Output()
 	if err != nil {
 		log.Printf("`git init` failed: %v", err)
@@ -53,7 +69,29 @@ func initBare(dir string) error {
 
 func initWithArchive(dir string, archive string) error {
 	if !strings.HasPrefix(archive, "s3://") {
-		return fmt.Errorf("Archive `%s` scheme not supported, only `s3://`", archive)
+		return fmt.Errorf("Archive `%s` scheme not supported, only `s3://` scheme is supported", archive)
 	}
 	return s3.Unarchive(dir, archive)
+}
+
+func initWithRemote(dir, remote, ref string) error {
+	if ref == "" {
+		ref = "master"
+	}
+	err := initBare(dir)
+	if err != nil {
+		return err
+	}
+	cmd := exec.Cmd{
+		Path: gitBinPath(),
+		Dir:  dir,
+		Args: []string{"git", "fetch", "-n", remote, ref + ":master"},
+	}
+	gitDebug(&cmd)
+	_, err = cmd.Output()
+	if err != nil {
+		log.Printf("`git init` failed: %v", err)
+		return err
+	}
+	return nil
 }

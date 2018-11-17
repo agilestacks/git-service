@@ -13,10 +13,6 @@ import (
 	"gits/repo"
 )
 
-type CreateRequest struct {
-	Archive string
-}
-
 func createRepo(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	repoId := getRepositoryId(vars["organization"], vars["repository"])
@@ -27,18 +23,18 @@ func createRepo(w http.ResponseWriter, req *http.Request) {
 			fmt.Sprintf("Error reading request body: %v", err))
 		return
 	}
-	archive := ""
+	var createReq *repo.CreateRequest
 	if len(body) > 4 {
-		var reqData CreateRequest
+		var reqData repo.CreateRequest
 		err = json.Unmarshal(body, &reqData)
 		if err != nil {
 			writeError(w, http.StatusBadRequest, fmt.Sprintf("Error unmarshalling JSON request: %v", err))
 			return
 		}
-		archive = reqData.Archive
+		createReq = &reqData
 	}
 
-	err = repo.Create(repoId, archive)
+	err = repo.Create(repoId, createReq)
 	if err != nil {
 		message := fmt.Sprintf("Unable to create Git repo `%s`: %v", repoId, err)
 		log.Print(message)
@@ -47,8 +43,10 @@ func createRepo(w http.ResponseWriter, req *http.Request) {
 			status = http.StatusConflict
 		} else if strings.Contains(err.Error(), "not supported") {
 			status = http.StatusBadRequest
+		} else if strings.Contains(err.Error(), "not implemented") {
+			status = http.StatusNotImplemented
 		} else if strings.Contains(err.Error(), "S3") {
-			status = http.StatusGatewayTimeout
+			status = http.StatusBadGateway
 		}
 		writeError(w, status, message)
 	} else {
