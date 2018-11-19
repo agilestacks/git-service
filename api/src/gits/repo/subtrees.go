@@ -16,6 +16,7 @@ import (
 type AddSubtree struct {
 	Prefix     string
 	Repository string
+	Remote     string
 	Ref        string
 	Squash     bool
 }
@@ -23,9 +24,15 @@ type AddSubtree struct {
 func AddSubtrees(repoId string, subtrees []AddSubtree) error {
 	dir := filepath.Join(config.RepoDir, repoId)
 
-	// validate
+	// validate, set defaults
 	for i, subtree := range subtrees {
-		if subtree.Prefix == "" || subtree.Repository == "" {
+		if subtree.Remote == "" && subtree.Repository != "" { // compat
+			subtrees[i].Remote = subtree.Repository
+			subtree.Remote = subtree.Repository
+		}
+		if subtree.Prefix == "" || subtree.Remote == "" ||
+			!(strings.HasPrefix(subtree.Remote, "http:") || strings.HasPrefix(subtree.Remote, "https:") ||
+				strings.HasPrefix(subtree.Remote, "git:") || strings.HasPrefix(subtree.Remote, "git@")) {
 			return fmt.Errorf("Invalid subtree spec at index %d: %+v ", i, subtree)
 		}
 		if subtree.Ref == "" {
@@ -67,7 +74,7 @@ func AddSubtrees(repoId string, subtrees []AddSubtree) error {
 
 	// add subtrees
 	for _, subtree := range subtrees {
-		args := []string{"git", "subtree", "add", "--prefix=" + subtree.Prefix, subtree.Repository, subtree.Ref}
+		args := []string{"git", "subtree", "add", "--prefix=" + subtree.Prefix, subtree.Remote, subtree.Ref}
 		if subtree.Squash {
 			args = append(args, "--squash")
 		}
@@ -79,7 +86,7 @@ func AddSubtrees(repoId string, subtrees []AddSubtree) error {
 		gitDebug(&cmd)
 		err = cmd.Run()
 		if err != nil {
-			return fmt.Errorf("Unable to add subtree `%s` ref `%s`: %v", maskAuth(subtree.Repository), subtree.Ref, err)
+			return fmt.Errorf("Unable to add subtree `%s` ref `%s`: %v", maskAuth(subtree.Remote), subtree.Ref, err)
 		}
 	}
 
@@ -99,7 +106,7 @@ func AddSubtrees(repoId string, subtrees []AddSubtree) error {
 		if config.Trace {
 			log.Printf("Subtrees added to `%s` repo:", repoId)
 			for _, subtree := range subtrees {
-				log.Printf("\t%s => %s @ %s", subtree.Prefix, maskAuth(subtree.Repository), subtree.Ref)
+				log.Printf("\t%s => %s @ %s", subtree.Prefix, maskAuth(subtree.Remote), subtree.Ref)
 			}
 		} else {
 			added := make([]string, 0, len(subtrees))
