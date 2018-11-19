@@ -56,10 +56,10 @@ func initBare(dir string) error {
 	cmd := exec.Cmd{
 		Path: gitBinPath(),
 		Dir:  dir,
-		Args: []string{"git", "init", "--bare", "."},
+		Args: []string{"git", "init", "--bare"},
 	}
 	gitDebug(&cmd)
-	_, err := cmd.Output()
+	err := cmd.Run()
 	if err != nil {
 		log.Printf("`git init` failed: %v", err)
 		return err
@@ -88,7 +88,7 @@ func initWithRemote(dir, remote, ref string) error {
 		Args: []string{"git", "fetch", "-n", remote, ref + ":master"},
 	}
 	gitDebug(&cmd)
-	_, err = cmd.Output()
+	err = cmd.Run()
 	if err != nil {
 		log.Printf("`git init` failed: %v", err)
 		return err

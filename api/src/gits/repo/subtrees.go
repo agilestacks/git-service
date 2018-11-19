@@ -21,8 +21,12 @@ type AddSubtree struct {
 	Squash     bool
 }
 
-func AddSubtrees(repoId string, subtrees []AddSubtree) error {
+// TODO add subtree to an empty branch
+func AddSubtrees(repoId, branch string, subtrees []AddSubtree) error {
 	dir := filepath.Join(config.RepoDir, repoId)
+	if branch == "" {
+		branch = "master"
+	}
 
 	// validate, set defaults
 	for i, subtree := range subtrees {
@@ -51,7 +55,7 @@ func AddSubtrees(repoId string, subtrees []AddSubtree) error {
 	cmd := exec.Cmd{
 		Path: gitBinPath(),
 		Dir:  "/",
-		Args: []string{"git", "clone", dir, clone},
+		Args: []string{"git", "clone", "--branch", branch, "--single-branch", "--no-tags", dir, clone},
 	}
 	gitDebug(&cmd)
 	err = cmd.Run()

@@ -20,6 +20,7 @@ type SubtreesRequest struct {
 func addSubtrees(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	repoId := getRepositoryId(vars["organization"], vars["repository"])
+	branch := req.URL.Query().Get("ref")
 
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
@@ -40,7 +41,7 @@ func addSubtrees(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = repo.AddSubtrees(repoId, reqData.Subtrees)
+	err = repo.AddSubtrees(repoId, branch, reqData.Subtrees)
 	if err != nil {
 		message := fmt.Sprintf("Unable to add subtrees to Git repo `%s`: %v", repoId, err)
 		log.Print(message)

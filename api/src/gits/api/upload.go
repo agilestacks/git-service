@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -15,12 +16,13 @@ import (
 func uploadFile(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	repoId := getRepositoryId(vars["organization"], vars["repository"])
+	branch := req.URL.Query().Get("ref")
 	mode, err := queryFileMode(req)
 	if err != nil {
 		log.Printf("Bad file mode: %v", err)
 	}
-	add(repoId,
-		[]repo.AddFile{{Path: vars["file"], Content: req.Body, Mode: mode}},
+	add(repoId, branch,
+		[]repo.AddFile{{Path: filepath.Clean(vars["file"]), Content: req.Body, Mode: mode}},
 		queryCommitMessage(req),
 		w)
 }
@@ -28,6 +30,7 @@ func uploadFile(w http.ResponseWriter, req *http.Request) {
 func uploadFiles(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	repoId := getRepositoryId(vars["organization"], vars["repository"])
+	branch := req.URL.Query().Get("ref")
 
 	diagnose := func(status int, message string) {
 		log.Print(message)
@@ -79,15 +82,15 @@ func uploadFiles(w http.ResponseWriter, req *http.Request) {
 				}
 			}
 
-			files = append(files, repo.AddFile{Path: field, Content: file, Mode: mode})
+			files = append(files, repo.AddFile{Path: filepath.Clean(field), Content: file, Mode: mode})
 			break
 		}
 	}
-	add(repoId, files, queryCommitMessage(req), w)
+	add(repoId, branch, files, queryCommitMessage(req), w)
 }
 
-func add(repoId string, files []repo.AddFile, commitMessage string, w http.ResponseWriter) {
-	err := repo.Add(repoId, files, commitMessage)
+func add(repoId, branch string, files []repo.AddFile, commitMessage string, w http.ResponseWriter) {
+	err := repo.Add(repoId, branch, files, commitMessage)
 	if err != nil {
 		message := fmt.Sprintf("Unable to add files to Git repository: %v", err)
 		log.Print(message)
