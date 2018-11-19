@@ -123,6 +123,8 @@ func getRouter() http.Handler {
 		Methods("POST")
 	s.Handle("/subtrees", cmw(http.HandlerFunc(addSubtrees))).
 		Methods("POST")
+	s.Handle("/blob/{file:.*}", cmw(http.HandlerFunc(sendRepoBlob))).
+		Methods("GET")
 	s.Handle("/log", cmw(http.HandlerFunc(sendRepoLog))).
 		Methods("GET")
 	s.Handle("/status", cmw(http.HandlerFunc(sendRepoStatus))).

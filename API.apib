@@ -25,6 +25,30 @@ URL names are lowercased, non-alphanumeric characters replaced by dashes `-`.
     + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
 
 
+### Retrieve Repository content [GET /repositories/{repositoryId}/blob/{path}{?ref}]
+
+Only files can be retrieved. Attempt to retrieve directory will result in 400 Bad Request.
+
++ Parameters
+    + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
+    + path: `README` - file path to retrieve
+    + ref: `master` - branch, tag, or ref to retrieve from
+
++ Request
+
+    + Headers
+
+            X-API-Secret: git-api-secret
+
++ Response 200 (application/octet-stream)
+
++ Response 400
+
++ Response 404
+
++ Response 403
+
+
 ### Retrieve Repository Git Log [GET /repositories/{repositoryId}/log{?ref}]
 
 + Parameters
