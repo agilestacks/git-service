@@ -34,6 +34,7 @@ RUN chmod 600 /gits-key && \
     rm /var/cache/apk/*
 RUN git config --global user.email "hub@agilestacks.io"
 RUN git config --global user.name "Automation Hub"
+RUN git config --global uploadpack.allowAnySHA1InWant true
 
 EXPOSE 2022
 EXPOSE 8005
