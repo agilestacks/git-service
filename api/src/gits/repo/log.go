@@ -16,7 +16,7 @@ func Log(repoId, ref string) ([]byte, error) {
 	cmd := exec.Cmd{
 		Path: gitBinPath(),
 		Dir:  dir,
-		Args: []string{"git", "log"},
+		Args: []string{"git", "log", ref},
 	}
 	if config.Debug {
 		cmd.Stderr = os.Stdout
