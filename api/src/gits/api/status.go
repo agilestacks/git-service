@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+
 	"gits/config"
 	"gits/repo"
 )
@@ -20,6 +21,7 @@ func sendRepoStatus(w http.ResponseWriter, req *http.Request) {
 
 	status, err := repo.Status(repoId, ref)
 	if err != nil {
+		// TODO return partial status if any? (status != nil)
 		message := fmt.Sprintf("Unable to obtain Git repo `%s` status: %v", repoId, err)
 		log.Print(message)
 		httpStatus := http.StatusInternalServerError
