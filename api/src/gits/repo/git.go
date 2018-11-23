@@ -52,6 +52,16 @@ func gitDebug2(cmd *exec.Cmd, stdoutCopy io.Writer) {
 	}
 }
 
+func gitDebug4(cmd *exec.Cmd, stdoutCopy io.Writer) {
+	if config.Trace {
+		printGitArgs(cmd)
+	}
+	cmd.Stdout = stdoutCopy
+	if config.Debug {
+		cmd.Stderr = os.Stdout
+	}
+}
+
 func gitDebug3(cmd *exec.Cmd, stdoutCopy io.Writer, stderrCopy io.Writer) {
 	if config.Debug {
 		stderrCopy = io.MultiWriter(stderrCopy, os.Stdout)

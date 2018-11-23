@@ -27,12 +27,10 @@ func RefsInfo(repoId string, service string, out io.Writer) error {
 		Args:   []string{service, "--stateless-rpc", "--advertise-refs", "."},
 		Stdout: out,
 	}
-	if config.Debug {
-		cmd.Stderr = os.Stdout
-	}
 	if config.Trace {
 		log.Printf("Git refs info: %s %v %s", cmd.Path, cmd.Args, cmd.Dir)
 	}
+	gitDebug2(&cmd, out)
 	return cmd.Run()
 }
 
@@ -45,11 +43,9 @@ func Pack(repoId string, service string, out io.Writer, in io.Reader) error {
 		Stdout: out,
 		Stdin:  in,
 	}
-	if config.Debug {
-		cmd.Stderr = os.Stdout
-	}
 	if config.Trace {
 		log.Printf("Git pack: %s %v %s", cmd.Path, cmd.Args, cmd.Dir)
 	}
+	gitDebug4(&cmd, out)
 	return cmd.Run()
 }
