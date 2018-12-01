@@ -58,7 +58,7 @@ func Blob(repoId, ref, path string) (io.ReadCloser, error) {
 	if info.Mode()&os.ModeType != 0 {
 		return nil, errors.New("not a regular file")
 	}
-	file, err := os.Open(path)
+	file, err := os.Open(fullPath)
 	if err != nil {
 		return nil, err
 	}
