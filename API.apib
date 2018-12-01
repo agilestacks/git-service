@@ -32,7 +32,7 @@ Only files can be retrieved. Attempt to retrieve directory will result in 400 Ba
 + Parameters
     + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
     + path: `README` - file path to retrieve
-    + ref: `master` - branch, tag, or ref to retrieve from
+    + ref: `master` (string, optional) - branch, tag, or ref to retrieve from
 
 + Request
 
@@ -53,7 +53,7 @@ Only files can be retrieved. Attempt to retrieve directory will result in 400 Ba
 
 + Parameters
     + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
-    + ref: `master` - branch, tag, ref, or commit hash to retrieve log of
+    + ref: `master` (string, optional) - branch, tag, ref, or commit hash to retrieve log of
 
 + Request
 
@@ -88,7 +88,7 @@ Only files can be retrieved. Attempt to retrieve directory will result in 400 Ba
 
 + Parameters
     + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
-    + ref: `master` - branch, tag, ref, or commit hash to retrieve status of
+    + ref: `master` (string, optional) - branch, tag, ref, or commit hash to retrieve status of
 
 + Request
 
@@ -122,7 +122,7 @@ Only files can be retrieved. Attempt to retrieve directory will result in 400 Ba
 ### Create Repository [PUT]
 
 `remote` is optional. If supplied the content of the remote repository became root of the new repo.
-`squash` deletes history creating a repository with single initial commit. If supplied the `message`
+`squash` **not imlemented** deletes history creating a repository with single initial commit. If supplied the `message`
 is used as initial commit message.
 
 `archive` is optional. If supplied the content of the repository is unpacked from the archive, so it
@@ -173,7 +173,7 @@ Upload a single file and commit to the repository.
     + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
     + message: `log entry` (string, optional) - Git commit log message
     + mode: `0755` (string, optional) - File mode in octal
-    + ref: `master` - branch to add to
+    + ref: `master` (string, optional) - branch to add file to
 
 + Request
 
@@ -205,7 +205,7 @@ Upload multiple files and commit to the repository.
 + Parameters
     + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
     + message: `log entry` (string, optional) - Git commit log message
-    + ref: `master` - branch to add to
+    + ref: `master` (string, optional) - branch to add files to
 
 + Request
 
@@ -246,7 +246,7 @@ Add multiple Git subtrees to the repository. Subtree `ref` and `squash` are opti
 
 + Parameters
     + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
-    + ref: `master` - branch to add subtree to
+    + ref: `master` (string, optional) - branch to add subtree to
 
 + Request (application/json; charset=utf-8)
 
