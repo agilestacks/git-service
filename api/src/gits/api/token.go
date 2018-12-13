@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	cypherBlockLen = 16
-	macLen         = 20
+	cypherBlockLen = aes.BlockSize
+	macLen         = sha1.Size
 )
 
 var (
