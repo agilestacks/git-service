@@ -63,7 +63,7 @@ func decodeDeploymentKey(deploymentKeyHex string) (string, string, error) {
 		return userId, subject, fmt.Errorf("Deployment key decoding not initialized")
 	}
 
-	mac := deploymentKey[0:macLen]
+	mac := deploymentKey[:macLen]
 	encryptedMaterial := deploymentKey[macLen:]
 
 	h := hmac.New(deploymentKeyMacAlg, deploymentKeySecret)
@@ -84,12 +84,12 @@ func decodeDeploymentKey(deploymentKeyHex string) (string, string, error) {
 
 	i := bytes.Index(paddedMaterial, deploymentKeySep)
 	if i > 0 && macErr == nil {
-		userId = string(paddedMaterial[0:i])
+		userId = string(paddedMaterial[:i])
 		if i < len(paddedMaterial) {
 			rest := paddedMaterial[i:]
 			i := bytes.Index(rest, deploymentKeySep)
 			if i > 0 {
-				subject = string(rest[0:i])
+				subject = string(rest[:i])
 			}
 		}
 	}
