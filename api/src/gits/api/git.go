@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+
 	"gits/config"
 	"gits/repo"
 )
@@ -56,8 +57,8 @@ func checkUserRepoAccess(req *http.Request) bool {
 		var accessErr error
 		hasAccess, accessErr = repo.Access(repoId, service, []string{decodedUsername})
 		if decodeErr != nil || accessErr != nil {
-			log.Printf("No %s access to `%s` for token `%s...` user `%s`: %v; %v",
-				service, repoId, deploymentKey[0:8], decodedUsername, decodeErr, accessErr)
+			log.Printf("No %s access to `%s` for token `%s...` user `%s`: %v",
+				service, repoId, deploymentKey[0:8], decodedUsername, seeErrors2(decodeErr, accessErr))
 			return false
 		}
 		if hasAccess && decodedSubject != "" {
