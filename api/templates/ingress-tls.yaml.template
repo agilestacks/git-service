@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${component.git-service.name}
+  namespace: ${component.git-service.namespace}
+  labels:
+    provider: agilestacks.com
+    project: git-service
+spec:
+  rules:
+  - host: ${component.git-service.name}.${component.ingress.fqdn}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ${component.git-service.name}
+          servicePort: 80
+  tls:
+    - hosts:
+      - ${component.git-service.name}.${component.ingress.fqdn}
+      secretName: ${component.git-service.name}-tls

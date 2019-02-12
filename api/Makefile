@@ -6,12 +6,19 @@ export PATH              := $(GOBIN):$(PATH)
 
 export AWS_DEFAULT_REGION ?= us-east-2
 
-DOMAIN_NAME     ?= dev.kubernetes.deliver
-COMPONENT_NAME  ?= git-service
-REGISTRY        ?= $(subst https://,,$(lastword $(shell aws ecr get-login --region $(AWS_DEFAULT_REGION))))
-IMAGE           ?= $(REGISTRY)/agilestacks/$(DOMAIN_NAME)/git-service
-IMAGE_VERSION   ?= $(shell git rev-parse HEAD | colrm 7)
-NAMESPACE       ?= automation-hub
+DOMAIN_NAME    ?= dev.kubernetes.deliver
+COMPONENT_NAME ?= git-service
+REGISTRY       ?= $(subst https://,,$(lastword $(shell aws ecr get-login --region $(AWS_DEFAULT_REGION))))
+IMAGE          ?= $(REGISTRY)/agilestacks/$(DOMAIN_NAME)/git-service
+IMAGE_VERSION  ?= $(shell git rev-parse HEAD | colrm 7)
+NAMESPACE      ?= automation-hub
+SSL_ENABLED    ?= true
+
+ifeq (true,$(SSL_ENABLED))
+	INGRESS:=ingress-tls
+else
+	INGRESS:=ingress
+endif
 
 BACKUP_BUCKET   ?= files.$(DOMAIN_NAME)
 BACKUP_REGION   ?= us-east-2
@@ -137,7 +144,7 @@ kubernetes:
 	$(kubectl) apply -f templates/pvc.yaml
 	$(kubectl) apply -f templates/secret.yaml
 	$(kubectl) apply -f templates/service.yaml
-	$(kubectl) apply -f templates/ingress.yaml
+	$(kubectl) apply -f templates/$(INGRESS).yaml
 	$(kubectl) apply -f templates/deployment.yaml
 .PHONY: kubernetes
 
@@ -145,7 +152,7 @@ undeploy:
 	-$(kubectl) delete -f templates/deployment.yaml
 	-$(kubectl) delete -f templates/pvc.yaml
 	-$(kubectl) delete -f templates/volume.yaml
-	-$(kubectl) delete -f templates/ingress.yaml
+	-$(kubectl) delete -f templates/$(INGRESS).yaml
 	-$(kubectl) delete -f templates/service.yaml
 	-$(kubectl) delete -f templates/secret.yaml
 .PHONY: undeploy
