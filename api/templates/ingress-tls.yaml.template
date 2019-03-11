@@ -6,6 +6,8 @@ metadata:
   labels:
     provider: agilestacks.com
     project: git-service
+  annotations:
+    kubernetes.io/tls-acme: "true"
 spec:
   rules:
   - host: ${component.git-service.name}.${component.ingress.fqdn}
