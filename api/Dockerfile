@@ -13,7 +13,7 @@ RUN go build -v gits
 
 FROM alpine:3.8
 
-ARG GIT_VERSION="2.20.1-r0"
+ARG GIT_VERSION="2.21.0-r0"
 
 ENV GIT_API_SECRET "*** unset ***"
 ENV HUB_API_SECRET "*** unset ***"
