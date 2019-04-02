@@ -12,9 +12,9 @@ REGISTRY       ?= $(subst https://,,$(lastword $(shell aws ecr get-login --regio
 IMAGE          ?= $(REGISTRY)/agilestacks/$(DOMAIN_NAME)/git-service
 IMAGE_VERSION  ?= $(shell git rev-parse HEAD | colrm 7)
 NAMESPACE      ?= automation-hub
-SSL_ENABLED    ?= true
+HUB_PROVIDES   ?=
 
-ifeq (true,$(SSL_ENABLED))
+ifneq (,$(filter tls-ingress,$(HUB_PROVIDES)))
 	INGRESS:=ingress-tls
 else
 	INGRESS:=ingress

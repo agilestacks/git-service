@@ -21,9 +21,6 @@ parameters:
   env: DOMAIN_NAME
 - name: component.ingress.fqdn
 - name: component.ingress.protocol
-- name: component.ingress.ssl.enabled
-  empty: allow
-  env: SSL_ENABLED
 - name: component.automation-hub.endpoint
 - name: component.auth-service.endpoint
 - name: component.subscriptions-service.endpoint
