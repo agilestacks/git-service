@@ -11,9 +11,7 @@ COPY src/gits /go/src/gits
 RUN go build -v gits
 
 
-FROM alpine:3.8
-
-ARG GIT_VERSION="2.21.0-r0"
+FROM alpine:3.9
 
 ENV GIT_API_SECRET "*** unset ***"
 ENV HUB_API_SECRET "*** unset ***"
@@ -28,8 +26,7 @@ VOLUME /git
 
 RUN chmod 600 /gits-key && \
     apk update && apk upgrade && \
-    apk add --no-cache expat tini && \
-    apk add --no-cache git=${GIT_VERSION} git-subtree=${GIT_VERSION} --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main && \
+    apk add --no-cache expat git git-subtree tini && \
     apk add --no-cache aws-cli --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
     rm /var/cache/apk/*
 RUN git config --global user.email "hub@agilestacks.io"
