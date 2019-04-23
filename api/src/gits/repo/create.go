@@ -90,7 +90,7 @@ func initWithRemote(dir, remote, ref string) error {
 	gitDebug(&cmd)
 	err = cmd.Run()
 	if err != nil {
-		log.Printf("`git init` failed: %v", err)
+		log.Printf("`git fetch` failed: %v", err)
 		return err
 	}
 	return nil
