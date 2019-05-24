@@ -9,6 +9,11 @@ metadata:
     qualifier: gits
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      provider: agilestacks.com
+      project: git-service
+      qualifier: gits
   template:
     metadata:
       name: ${component.git-service.name}
