@@ -45,7 +45,7 @@ pipeline {
           dir('api') {
             script {
               final component = hub.explain(state: params.HUB_STATE).components['git-service-ecr']
-              imageName = component.outputs['component.docker.image'] as String
+              imageName = component.outputs['component.docker.registry.image'] as String
               region = component.parameters['cloud.region'] as String
               image = "${imageName}:${gitscm.getShortCommit()}"
 
