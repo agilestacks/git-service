@@ -24,7 +24,7 @@ BACKUP_BUCKET   ?= files.$(DOMAIN_NAME)
 BACKUP_REGION   ?= us-east-2
 REPOS_PATH      ?= /git
 TS              := $(shell date +"%Y-%m-%d-%H-%M-%S")
-BACKUP_SNAPSHOT ?= s3://$(BACKUP_BUCKET)/backup/$(DOMAIN_NAME)/git-service/$(COMPONENT_NAME)/$(TS).tar.bz
+BACKUP_SNAPSHOT ?= s3://$(BACKUP_BUCKET)/$(DOMAIN_NAME)/backup/git-service/$(COMPONENT_NAME)/$(TS).tar.bz
 
 kubectl         ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 docker          ?= docker
