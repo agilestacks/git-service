@@ -1,4 +1,4 @@
-FROM golang:1.11-alpine as builder
+FROM golang:1.12-alpine as builder
 
 RUN apk update && apk upgrade && \
     apk add --no-cache git
@@ -11,7 +11,7 @@ COPY src/gits /go/src/gits
 RUN go build -v gits
 
 
-FROM alpine:3.9
+FROM alpine:3.10
 
 ENV GIT_API_SECRET "*** unset ***"
 ENV HUB_API_SECRET "*** unset ***"
