@@ -1,20 +1,19 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: git-repo
+  name: ${component.git-service.name}-repo
   namespace: "${component.git-service.namespace}"
+  finalizers:
+  - kubernetes.io/pvc-protection
   labels:
     provider:  agilestacks.com
     project:   git-service
-    qualifier: git-repo
+    qualifier: ${component.git-service.name}-repo
 spec:
-  selector:
-    matchLabels:
-      provider:  agilestacks.com
-      project:   git-service
-      qualifier: git-repo
   accessModes:
-  - ReadWriteMany
+  - ReadWriteOnce
+  storageClassName: default
   resources:
     requests:
       storage: "${component.git-service.volume.size}"
+  volumeMode: Filesystem

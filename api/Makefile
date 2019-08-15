@@ -30,6 +30,9 @@ kubectl         ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 docker          ?= docker
 aws             ?= aws
 
+running_git_pod := $(kubectl) get pods -l provider=agilestacks.com,project=git-service,qualifier=gits \
+	-o jsonpath='{range.items[?(@.status.containerStatuses[0].ready==true)]}{.kind}{"\n"}{end}'
+
 install:
 	@go get -u github.com/mitchellh/gox
 	@go get -u github.com/kardianos/govendor
@@ -82,11 +85,20 @@ deploy: build ecr-login push kubernetes wait restore
 endif
 .PHONY: deploy
 
-# TODO replace with pod wait
 wait:
-	@echo Waiting for pod to come online
-	@sleep 20
-.PHONY: sleep
+	@echo "Waiting for Git Service pod to stand up"; \
+	sleep 5; \
+	for i in $$(seq 1 30); do \
+		if test -n "$$($(running_git_pod))"; then \
+			echo "done"; \
+			exit 0; \
+		fi; \
+		echo "still waiting"; \
+		sleep 10; \
+	done; \
+	echo "timeout"; \
+	exit 1
+.PHONY: wait
 
 find-pod:
 	@$(kubectl) get pods
@@ -140,7 +152,6 @@ push:
 
 kubernetes:
 	$(kubectl) apply -f templates/namespace.yaml
-	$(kubectl) apply -f templates/volume.yaml
 	$(kubectl) apply -f templates/pvc.yaml
 	$(kubectl) apply -f templates/secret.yaml
 	$(kubectl) apply -f templates/service.yaml
@@ -151,7 +162,6 @@ kubernetes:
 undeploy:
 	-$(kubectl) delete -f templates/deployment.yaml
 	-$(kubectl) delete -f templates/pvc.yaml
-	-$(kubectl) delete -f templates/volume.yaml
 	-$(kubectl) delete -f templates/$(INGRESS).yaml
 	-$(kubectl) delete -f templates/service.yaml
 	-$(kubectl) delete -f templates/secret.yaml

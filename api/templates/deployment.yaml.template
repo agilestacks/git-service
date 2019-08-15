@@ -81,4 +81,4 @@ spec:
       volumes:
       - name: git-repo
         persistentVolumeClaim:
-          claimName: git-repo
+          claimName: ${component.git-service.name}-repo

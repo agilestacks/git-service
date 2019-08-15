@@ -44,9 +44,7 @@ parameters:
   - name: privatekey.base64Encoded
     kind: user
   - name: volume.size
-    value: 100Gi
-  - name: volume.path
-    value: /mnt/nfs/gits/vol-00
+    value: 30Gi
   - name: repos
     value: /git
     env: REPOS_PATH
