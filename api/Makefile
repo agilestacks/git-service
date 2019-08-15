@@ -1,12 +1,12 @@
 .DEFAULT_GOAL := compile
 
-export GOPATH            := $(abspath .)
-export GOBIN             := $(GOPATH)/bin/$(shell uname -s | tr A-Z a-z)
-export PATH              := $(GOBIN):$(PATH)
+export GOPATH := $(abspath .)
+export GOBIN  := $(GOPATH)/bin/$(shell uname -s | tr A-Z a-z)
+export PATH   := $(GOBIN):$(PATH)
 
 export AWS_DEFAULT_REGION ?= us-east-2
 
-DOMAIN_NAME    ?= dev.kubernetes.deliver
+DOMAIN_NAME    ?= test.dev.superhub.io
 COMPONENT_NAME ?= git-service
 REGISTRY       ?= $(subst https://,,$(lastword $(shell aws ecr get-login --region $(AWS_DEFAULT_REGION))))
 IMAGE          ?= $(REGISTRY)/agilestacks/$(DOMAIN_NAME)/git-service
@@ -26,9 +26,9 @@ REPOS_PATH      ?= /git
 TS              := $(shell date +"%Y-%m-%d-%H-%M-%S")
 BACKUP_SNAPSHOT ?= s3://$(BACKUP_BUCKET)/$(DOMAIN_NAME)/backup/git-service/$(COMPONENT_NAME)/$(TS).tar.bz
 
-kubectl         ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-docker          ?= docker
-aws             ?= aws
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+docker  ?= docker
+aws     ?= aws
 
 running_git_pod := $(kubectl) get pods -l provider=agilestacks.com,project=git-service,qualifier=gits \
 	-o jsonpath='{range.items[?(@.status.containerStatuses[0].ready==true)]}{.kind}{"\n"}{end}'
