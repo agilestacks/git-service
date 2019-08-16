@@ -22,6 +22,7 @@ func Parse() {
 	flag.BoolVar(&config.Trace, "trace", false, "Print detailed trace if set")
 
 	flag.StringVar(&config.RepoDir, "repo_dir", "/git", "Base directory for Git repositories")
+	flag.StringVar(&config.MaintenanceFile, "maintenance", "", "Maintenance file, Git server go read-only mode if file exists (<repo_dir>/_maintenance)")
 	flag.StringVar(&blobsFrom, "blobs", "", "Allowed URL prefixes to fetch repo sources from, empty for no restrictions")
 	flag.IntVar(&config.HttpPort, "http_port", 8005, "HTTP API port to listen")
 	flag.IntVar(&config.SshPort, "ssh_port", 2022, "SSH server port to listen")

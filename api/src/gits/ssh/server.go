@@ -13,6 +13,7 @@ import (
 	"gits/config"
 	"gits/extapi"
 	"gits/repo"
+	"gits/util"
 )
 
 /* https://github.com/go-gitea/gitea/blob/HEAD/modules/ssh/ssh.go */
@@ -90,7 +91,13 @@ func keyFingerprint(key ssh.PublicKey) string {
 func handle(_users string, newChannels <-chan ssh.NewChannel) {
 	users := strings.Split(_users, ",")
 
+	maintenance, maintMessage := util.Maintenance()
+
 	for newChannel := range newChannels {
+		if maintenance {
+			newChannel.Reject(ssh.Prohibited, maintMessage)
+			continue
+		}
 		if newChannel.ChannelType() != "session" {
 			newChannel.Reject(ssh.UnknownChannelType, "Only `session` channel is supported")
 			continue

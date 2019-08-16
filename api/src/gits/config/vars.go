@@ -16,11 +16,12 @@ var (
 	Debug   bool
 	Trace   bool
 
-	RepoDir     string
-	HttpPort    int
-	SshPort     int
-	HostKeyFile string
-	BlobsFrom   []string
+	RepoDir         string
+	MaintenanceFile string
+	HttpPort        int
+	SshPort         int
+	HostKeyFile     string
+	BlobsFrom       []string
 
 	GitApiSecret string
 
@@ -55,5 +56,8 @@ func Update() {
 		if len(RepoDir) == 1 {
 			log.Fatalf("Repo directory `%s` is root directory?", RepoDir)
 		}
+	}
+	if MaintenanceFile == "" {
+		MaintenanceFile = filepath.Join(RepoDir, "_maintenance")
 	}
 }

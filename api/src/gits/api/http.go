@@ -15,6 +15,7 @@ import (
 	"gopkg.in/src-d/go-git.v4/utils/ioutil"
 
 	"gits/config"
+	"gits/util"
 )
 
 type middleware func(http.Handler) http.Handler
@@ -105,6 +106,20 @@ func gunzip(handler http.Handler) http.Handler {
 	})
 }
 
+func rejectIfMaintenance(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		if maint, msg := util.Maintenance(); maint {
+			rw.WriteHeader(http.StatusServiceUnavailable)
+			if msg != "" {
+				rw.Write([]byte(msg))
+			}
+			return
+		}
+
+		handler.ServeHTTP(rw, req)
+	})
+}
+
 func getRouter() http.Handler {
 	r := mux.NewRouter()
 	r.NotFoundHandler = mw(withLogger)(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
@@ -113,15 +128,15 @@ func getRouter() http.Handler {
 
 	s := r.PathPrefix("/api/v1/repositories/{organization}/{repository}").Subrouter()
 	cmw := mw(withLogger, withApiSecret, withRepoExist)
-	s.Handle("", mw(withLogger, withApiSecret)(http.HandlerFunc(createRepo))).
+	s.Handle("", mw(withLogger, withApiSecret, rejectIfMaintenance)(http.HandlerFunc(createRepo))).
 		Methods("PUT")
-	s.Handle("", cmw(http.HandlerFunc(deleteRepo))).
+	s.Handle("", mw(cmw, rejectIfMaintenance)(http.HandlerFunc(deleteRepo))).
 		Methods("DELETE")
-	s.Handle("/commit/{file:.*}", cmw(http.HandlerFunc(uploadFile))).
+	s.Handle("/commit/{file:.*}", mw(cmw, rejectIfMaintenance)(http.HandlerFunc(uploadFile))).
 		Methods("PUT")
-	s.Handle("/commit", cmw(http.HandlerFunc(uploadFiles))).
+	s.Handle("/commit", mw(cmw, rejectIfMaintenance)(http.HandlerFunc(uploadFiles))).
 		Methods("POST")
-	s.Handle("/subtrees", cmw(http.HandlerFunc(addSubtrees))).
+	s.Handle("/subtrees", mw(cmw, rejectIfMaintenance)(http.HandlerFunc(addSubtrees))).
 		Methods("POST")
 	s.Handle("/blob/{file:.*}", cmw(http.HandlerFunc(sendRepoBlob))).
 		Methods("GET")
@@ -137,7 +152,7 @@ func getRouter() http.Handler {
 		Handler(cmw(http.HandlerFunc(refsInfo)))
 	s.Path("/{service}").
 		Methods("POST").
-		Handler(mw(cmw, gunzip)(http.HandlerFunc(pack)))
+		Handler(mw(cmw, rejectIfMaintenance, gunzip)(http.HandlerFunc(pack)))
 
 	s = r.PathPrefix("/api/v1/ping").Subrouter()
 	s.Handle("", mw(withLogger)(http.HandlerFunc(ping))).

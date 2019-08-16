@@ -105,24 +105,39 @@ find-pod:
 	$(eval GITS_POD=$(shell $(kubectl) get pods -l project=git-service,provider=agilestacks.com,qualifier=gits --output=jsonpath={.items..metadata.name}))
 .PHONY: find-pod
 
-backup: find-pod
+maintenance-on: find-pod
+	$(kubectl) exec $(GITS_POD) -- \
+		touch "$(REPOS_PATH)/_maintenance"
+	@sleep 5
+.PHONY: maintenance-on
+
+maintenance-off: find-pod
+	$(kubectl) exec $(GITS_POD) -- \
+		rm -f "$(REPOS_PATH)/_maintenance"
+.PHONY: maintenance-off
+
+backup: maintenance-on tar maintenance-off
+
+tar: find-pod
 	$(kubectl) exec $(GITS_POD) -- /bin/sh -c \
 		"tar cjf - -C $(REPOS_PATH) . | aws --region=$(BACKUP_REGION) s3 cp - $(BACKUP_SNAPSHOT)"
 	@echo Outputs:
 	@echo kind = git-service
 	@echo component.git-service.snapshot = $(BACKUP_SNAPSHOT)
 	@echo
-.PHONY: backup
+.PHONY: tar
 
 connect: find-pod
 	$(kubectl) exec -ti $(GITS_POD) /bin/sh
 .PHONY: connect
 
 ifneq ($(RESTORE_SNAPSHOT),)
-restore: find-pod
+restore: maintenance-on untar maintenance-off
+
+untar: find-pod
 	$(kubectl) exec $(GITS_POD) -- /bin/sh -c \
 		"aws s3 cp $(RESTORE_SNAPSHOT) - | tar xjpf - -C $(REPOS_PATH)"
-.PHONY: restore
+.PHONY: untar
 endif
 
 delete-pod: find-pod

@@ -8,6 +8,7 @@ import (
 	"gits/flags"
 	"gits/s3"
 	"gits/ssh"
+	"gits/util"
 )
 
 func main() {
@@ -19,5 +20,6 @@ func main() {
 	if config.Verbose {
 		log.Printf("Git Service started on HTTP port %d, SSH port %d", config.HttpPort, config.SshPort)
 	}
+	util.Maintenance()
 	select {}
 }
