@@ -11,7 +11,7 @@ import (
 func init() {
 	config.GitApiSecret = "secret1213"
 	// Mock
-	InfoPack = func(repoId string, out io.Writer) error {
+	InfoPack = func(repoId, service string, out io.Writer) error {
 		return nil
 	}
 }

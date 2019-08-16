@@ -74,6 +74,11 @@ fmt:
 	@go fmt gits gits/api gits/config gits/extapi gits/flags gits/repo gits/s3 gits/ssh
 .PHONY: fmt
 
+vet:
+	@cd src && go vet -vettool=$(which shadow) \
+		gits gits/api gits/config gits/extapi gits/flags gits/repo gits/s3 gits/ssh gits/util
+.PHONY: vet
+
 key:
 	@ssh-keygen -t rsa -f gits-key -N ''
 .PHONY: key
