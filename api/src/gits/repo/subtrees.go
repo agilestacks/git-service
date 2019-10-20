@@ -15,7 +15,6 @@ import (
 
 type AddSubtree struct {
 	Prefix     string
-	Repository string
 	Remote     string
 	Ref        string
 	Squash     bool
@@ -30,10 +29,6 @@ func AddSubtrees(repoId, branch string, subtrees []AddSubtree) error {
 
 	// validate, set defaults
 	for i, subtree := range subtrees {
-		if subtree.Remote == "" && subtree.Repository != "" { // compat
-			subtrees[i].Remote = subtree.Repository
-			subtree.Remote = subtree.Repository
-		}
 		if subtree.Prefix == "" || subtree.Remote == "" ||
 			!(strings.HasPrefix(subtree.Remote, "http:") || strings.HasPrefix(subtree.Remote, "https:") ||
 				strings.HasPrefix(subtree.Remote, "git:") || strings.HasPrefix(subtree.Remote, "git@")) {
