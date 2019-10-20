@@ -242,7 +242,9 @@ Upload multiple files and commit to the repository.
 
 ### Add Git subtrees [POST /repositories/{repositoryId}/subtrees{?ref}]
 
-Add multiple Git subtrees to the repository. Subtree `ref` and `squash` are optional.
+Add multiple Git subtrees to the repository. Subtree `ref`, `splitPrefix`, and `squash` are optional.
+If no `splitPrefix` is specified then entire `ref` (or `master`) is added under `prefix`. If `splitPrefix`
+is supplied then it is extracted with `git split`. `squash` default is `false`.
 
 + Parameters
     + repositoryId: `agilestacks/my-k8s-template-2` (string) - ID of the Repository
@@ -259,10 +261,11 @@ Add multiple Git subtrees to the repository. Subtree `ref` and `squash` are opti
             {
                 "subtrees": [
                     {
-                        "prefix": "components",
+                        "prefix": "components/pgweb",
                         "remote": "git@github.com:agilestacks/components.git",
-                        "ref": "master",
-                        "squash": false
+                        "ref": "distribution",
+                        "splitPrefix": "pgweb",
+                        "squash": true
                     }
                 ]
             }
