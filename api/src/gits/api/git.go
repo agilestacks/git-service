@@ -31,7 +31,7 @@ func checkRepoExist(req *http.Request) bool {
 	vars := mux.Vars(req)
 	repoId := getRepositoryId(vars["organization"], vars["repository"])
 
-	return repo.RepoExist(repoId)
+	return repo.Exist(repoId)
 }
 
 func checkUserRepoAccess(req *http.Request) bool {

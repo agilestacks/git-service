@@ -45,10 +45,9 @@ func GitServer(command string, stdin io.Reader, stdout io.Writer, stderr io.Writ
 			log.Printf("%v", err)
 		}
 		return nil, err
-	} else {
-		if config.Debug {
-			log.Printf("%v have access to `%s`", users, repo)
-		}
+	}
+	if config.Debug {
+		log.Printf("%v have access to `%s`", users, repo)
 	}
 
 	repoPath := filepath.Join(config.RepoDir, repo)

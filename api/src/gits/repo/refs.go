@@ -10,7 +10,7 @@ import (
 	"gits/config"
 )
 
-func RepoExist(repoId string) bool {
+func Exist(repoId string) bool {
 	dir := filepath.Join(config.RepoDir, repoId)
 	_, err := os.Stat(dir)
 	return err == nil
