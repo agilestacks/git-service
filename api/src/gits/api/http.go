@@ -176,7 +176,7 @@ func Listen(host string, port int) {
 		Addr:         fmt.Sprintf("%s:%d", host, port),
 		Handler:      r,
 		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 30 * time.Second,
+		WriteTimeout: 120 * time.Second,
 	})
 }
 

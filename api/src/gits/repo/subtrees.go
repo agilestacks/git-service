@@ -119,26 +119,35 @@ func AddSubtrees(repoId, branch string, subtrees []AddSubtree) error {
 			return fmt.Errorf("Unable to checkout `%s` ref `%s` as local branch: %v", maskAuth(remote.Remote), remote.Ref, err)
 		}
 		// now, for each subtree from remote/ref, split prefix into a branch
+		cmds := make([]*exec.Cmd, 0, len(subtrees))
 		for i, subtree := range subtrees {
 			if subtree.SplitPrefix == "" || !(remote.Remote == subtree.Remote && remote.Ref == subtree.Ref) {
 				continue
 			}
 			splitBranchName := fmt.Sprintf("_split-%d", splitBranchIndex)
 			splitBranchIndex++
+			subtrees[i].splitBranch = splitBranchName
 			// git subtree split --prefix=pgweb -b _split-0
 			// TODO -q is too quiet
 			args = []string{"git", "subtree", "split", "-q", "--prefix=" + subtree.SplitPrefix, "-b", splitBranchName}
 			if subtree.Squash {
 				args = append(args, "--squash")
 			}
-			cmd = exec.Cmd{Path: gitBin, Dir: clone, Args: args}
-			gitDebug(&cmd)
-			err = cmd.Run()
+			cmd2 := &exec.Cmd{Path: gitBin, Dir: clone, Args: args}
+			gitDebug(cmd2)
+			err = cmd2.Start()
 			if err != nil {
 				return fmt.Errorf("Unable to split `%s` ref `%s` prefix `%s` as local branch: %v",
 					maskAuth(remote.Remote), remote.Ref, subtree.SplitPrefix, err)
 			}
-			subtrees[i].splitBranch = splitBranchName
+			cmds = append(cmds, cmd2)
+		}
+		for i, cmd := range cmds {
+			err = cmd.Wait()
+			if err != nil {
+				return fmt.Errorf("Unable to split `%s` ref `%s` prefix `%s` as local branch: %v",
+					maskAuth(remote.Remote), remote.Ref, subtrees[i].SplitPrefix, err)
+			}
 		}
 	}
 
