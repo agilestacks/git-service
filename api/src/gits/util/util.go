@@ -51,3 +51,19 @@ func maintenance() (bool, string) {
 	}
 	return true, msg
 }
+
+func Errors(sep string, maybeErrors ...error) string {
+	errs := make([]string, 0, len(maybeErrors))
+	for _, err := range maybeErrors {
+		if err != nil {
+			errs = append(errs, err.Error())
+		}
+	}
+	if len(errs) == 0 {
+		return "(no errors)"
+	}
+	if sep == "" {
+		sep = ", "
+	}
+	return strings.Join(errs, sep)
+}

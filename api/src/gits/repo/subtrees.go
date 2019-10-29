@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -11,6 +12,7 @@ import (
 	"strings"
 
 	"gits/config"
+	"gits/util"
 )
 
 type AddSubtree struct {
@@ -142,12 +144,16 @@ func AddSubtrees(repoId, branch string, subtrees []AddSubtree) error {
 			}
 			cmds = append(cmds, cmd2)
 		}
+		var errs []error
 		for i, cmd := range cmds {
 			err = cmd.Wait()
 			if err != nil {
-				return fmt.Errorf("Unable to split `%s` ref `%s` prefix `%s` as local branch: %v",
-					maskAuth(remote.Remote), remote.Ref, subtrees[i].SplitPrefix, err)
+				errs = append(errs, fmt.Errorf("Unable to split `%s` ref `%s` prefix `%s` as local branch: %v",
+					maskAuth(remote.Remote), remote.Ref, subtrees[i].SplitPrefix, err))
 			}
+		}
+		if len(errs) > 0 {
+			return errors.New(util.Errors("\n\t", errs...))
 		}
 	}
 
