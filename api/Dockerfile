@@ -27,7 +27,7 @@ VOLUME /git
 RUN chmod 600 /gits-key && \
     apk update && apk upgrade && \
     apk add --no-cache expat git git-subtree tini && \
-    apk add --no-cache aws-cli --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
+    apk add --no-cache aws-cli --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community && \
     apk upgrade --no-cache python3 --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main && \
     rm /var/cache/apk/*
 RUN git config --global user.email "hub@agilestacks.io"
