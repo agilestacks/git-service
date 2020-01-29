@@ -132,9 +132,6 @@ func AddSubtrees(repoId, branch string, subtrees []AddSubtree) error {
 			// git subtree split --prefix=pgweb -b _split-0
 			// TODO -q is too quiet
 			args = []string{"git", "subtree", "split", "-q", "--prefix=" + subtree.SplitPrefix, "-b", splitBranchName}
-			if subtree.Squash {
-				args = append(args, "--squash")
-			}
 			cmd2 := &exec.Cmd{Path: gitBin, Dir: clone, Args: args}
 			gitDebug(cmd2)
 			err = cmd2.Start()
