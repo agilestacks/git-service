@@ -16,10 +16,10 @@ import (
 )
 
 type AddSubtree struct {
-	Prefix      string
+	Prefix      string // add subtree under specified directory
 	Remote      string
 	Ref         string
-	SplitPrefix string `json:"splitPrefix"`
+	SplitPrefix string `json:"splitPrefix"` // what directory from remote to extract, whole repo if empty
 	splitBranch string
 	Squash      bool
 }
