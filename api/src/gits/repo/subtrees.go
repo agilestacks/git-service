@@ -20,7 +20,8 @@ type AddSubtree struct {
 	Remote      string
 	Ref         string
 	SplitPrefix string `json:"splitPrefix"` // what directory from remote to extract, whole repo if empty
-	splitBranch string
+	Branch      string // if subtree split is requested then this is a branch to push the split branch to
+	splitBranch string // internal use, the name of a split branch in worktree
 	Squash      bool
 }
 
@@ -201,6 +202,21 @@ func AddSubtrees(repoId, branch string, subtrees []AddSubtree) error {
 	err = cmd.Run()
 	if err != nil {
 		return fmt.Errorf("Unable to push repo clone `%s`: %v", clone, err)
+	}
+
+	// push split branch if requested
+	for _, subtree := range subtrees {
+		if subtree.Branch == "" || subtree.splitBranch == "" {
+			continue
+		}
+		args := []string{"git", "push", "origin", fmt.Sprintf("%s:%s", subtree.splitBranch, subtree.Branch)}
+		cmd = exec.Cmd{Path: gitBin, Dir: clone, Args: args}
+		gitDebug(&cmd)
+		err = cmd.Run()
+		if err != nil {
+			return fmt.Errorf("Unable to push split branch `%s` to origin branch `%s`: %v",
+				subtree.splitBranch, subtree.Branch, err)
+		}
 	}
 
 	if config.Verbose {
