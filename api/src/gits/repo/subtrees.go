@@ -171,7 +171,7 @@ func AddSubtrees(repoId, branch string, subtrees []AddSubtree) error {
 
 	// add subtrees
 	for _, subtree := range subtrees {
-		args := []string{"git", "subtree", "add", "--prefix=" + subtree.Prefix}
+		args := []string{"git", "subtree", "add", "-m", "Add " + subtree.Prefix, "--prefix=" + subtree.Prefix}
 		if subtree.SplitPrefix == "" {
 			args = append(args, subtree.Remote, subtree.Ref)
 		} else {
