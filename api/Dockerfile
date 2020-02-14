@@ -11,7 +11,7 @@ COPY src/gits /go/src/gits
 RUN go build -v gits
 
 
-FROM alpine:3.10
+FROM alpine:3.11
 
 ENV GIT_API_SECRET "*** unset ***"
 ENV HUB_API_SECRET "*** unset ***"
