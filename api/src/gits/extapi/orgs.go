@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"gits/config"
 )
@@ -20,6 +21,8 @@ func OrgById(orgId string) (*Org, error) {
 	if config.NoExtApiCalls {
 		return &Org{Id: "ASI", ShowSource: true}, nil
 	}
+
+	orgId = strings.ToUpper(orgId)
 
 	orgs := fmt.Sprintf("%s/organizations/%s", config.SubsApiEndpoint, url.QueryEscape(orgId))
 	req, err := http.NewRequest("GET", orgs, nil)
