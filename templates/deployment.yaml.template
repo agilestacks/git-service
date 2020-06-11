@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${component.git-service.name}
+  namespace: ${component.git-service.namespace}
+  labels:
+    provider: agilestacks.com
+    project: git-service
+    qualifier: gits
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      provider: agilestacks.com
+      project: git-service
+      qualifier: gits
+  template:
+    metadata:
+      name: ${component.git-service.name}
+      namespace: ${component.git-service.namespace}
+      labels:
+        provider: agilestacks.com
+        project: git-service
+        qualifier: gits
+    spec:
+      containers:
+      - name: git-service
+        image: ${component.git-service.image}
+        imagePullPolicy: Always
+        env:
+        - name: AWS_DEFAULT_REGION
+          value: "${component.git-service.bucket.region}"
+        - name: HUB_SERVICE_ENDPOINT
+          value: ${component.automation-hub.endpoint}
+        - name: AUTH_SERVICE_ENDPOINT
+          value: ${component.auth-service.endpoint}
+        - name: SUBS_SERVICE_ENDPOINT
+          value: ${component.subscriptions-service.endpoint}
+        - name: GIT_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: gits-secrets
+              key:  git-api-secret
+        - name: HUB_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: gits-secrets
+              key:  hub-api-secret
+        - name: AUTH_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: gits-secrets
+              key:  auth-api-secret
+        - name: SUBS_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: gits-secrets
+              key:  subs-api-secret
+        args:
+        - "/app/gits"
+        - "-aws_region"
+        - "${component.git-service.bucket.region}"
+        - "-http_port"
+        - "8005"
+        - "-ssh_port"
+        - "2022"
+        - "-repo_dir"
+        - "${component.git-service.repos}"
+        - "-debug"
+        - "-blobs"
+        - "s3://${component.git-service.bucket.name}/"
+        ports:
+        - name: http
+          containerPort: 8005
+        - name: ssh
+          containerPort: 2022
+        volumeMounts:
+        - name: git-repo
+          mountPath: /git
+          readOnly: false
+      volumes:
+      - name: git-repo
+        persistentVolumeClaim:
+          claimName: ${component.git-service.name}-repo

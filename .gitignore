@@ -1,2 +1,9 @@
-api/templates/*
-!api/templates/*.template
+/gits
+bin/gits
+bin/linux
+bin/darwin
+bin/windows
+
+gits-key*
+
+templates/*.yaml
