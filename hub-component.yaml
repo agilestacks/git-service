@@ -15,6 +15,7 @@ lifecycle:
   - deploy
   - undeploy
   - kubernetes
+  - backup
 
 parameters:
 - name: dns.domain
