@@ -42,7 +42,7 @@ parameters:
     kind: user
   - name: subsApiSecret
     kind: user
-  - name: privatekey.base64Encoded
+  - name: privateKey
     kind: user
   - name: volume.size
     value: 30Gi
