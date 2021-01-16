@@ -9,7 +9,7 @@ export AWS_DEFAULT_REGION ?= us-east-2
 DOMAIN_NAME    ?= test.dev.superhub.io
 COMPONENT_NAME ?= git-service
 LOCAL_IMAGE    ?= agilestacks/git-service
-REGISTRY       ?= $(subst https://,,$(lastword $(shell aws ecr get-login --region $(AWS_DEFAULT_REGION))))
+REGISTRY       ?= $(shell $(aws) sts get-caller-identity | jq -r .Account).dkr.ecr.$(AWS_DEFAULT_REGION).amazonaws.com
 IMAGE          ?= $(REGISTRY)/agilestacks/$(DOMAIN_NAME)/git-service
 IMAGE_VERSION  ?= $(shell git rev-parse HEAD | colrm 7)
 NAMESPACE      ?= automation-hub
@@ -135,7 +135,7 @@ build:
 .PHONY: build
 
 ecr-login:
-	$(aws) ecr get-login --no-include-email --region $(AWS_DEFAULT_REGION) | $(SHELL) -
+	$(aws) ecr get-login-password --region $(AWS_DEFAULT_REGION) | $(docker) login --username AWS --password-stdin $(REGISTRY)
 .PHONY: ecr-login
 
 push:
