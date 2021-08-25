@@ -5,8 +5,11 @@ HOST: http://git.agilestacks.com/api/v1
 
 Git Service has protected HTTP API to provide access to it's functions, such as:
 
-- creating Git repository from template (unpack from an S3 binary blob);
-- uploading files to the repository as commits.
+- creating an empty Git repository;
+- creating a Git repository from template: cloning upstream (GitHub) repository or unpacking from an S3 binary blob;
+- uploading files to the repository as commits;
+- performing Git subtree splits to embed sources as subdirectories;
+- retrieving repository log.
 
 Please read [design](https://github.com/agilestacks/git-service/blob/master/README.md) first.
 
