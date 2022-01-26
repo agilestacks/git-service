@@ -26,7 +26,7 @@ spec:
       containers:
       - name: git-service
         image: ${component.git-service.image}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         env:
         - name: AWS_DEFAULT_REGION
           value: "${component.git-service.bucket.region}"

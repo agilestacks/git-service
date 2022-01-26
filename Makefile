@@ -28,7 +28,7 @@ TS              := $(shell date +"%Y-%m-%d-%H-%M-%S")
 BACKUP_SNAPSHOT ?= s3://$(BACKUP_BUCKET)/$(DOMAIN_NAME)/backup/git-service/$(COMPONENT_NAME)/$(TS).tar.bz
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-docker  ?= docker
+docker  ?= nerdctl --namespace="k8s.io"
 aws     ?= aws
 
 running_git_pod := $(kubectl) get pods -l provider=agilestacks.com,project=git-service,qualifier=gits \
@@ -60,7 +60,7 @@ key:
 	@ssh-keygen -t rsa -f gits-key -N ''
 .PHONY: key
 
-deploy: build ecr-login push kubernetes
+deploy: build kubernetes
 ifneq ($(RESTORE_SNAPSHOT),)
 deploy: wait restore
 endif
@@ -131,7 +131,7 @@ clean:
 .PHONY: clean
 
 build:
-	$(docker) build -t $(LOCAL_IMAGE):$(IMAGE_VERSION) -t $(LOCAL_IMAGE):latest .
+	$(docker) build -t $(IMAGE) .
 .PHONY: build
 
 ecr-login:

@@ -23,12 +23,13 @@ ADD https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant /app
 
 VOLUME /git
 
-RUN chmod 600 /app/gits-key && \
-    apk update && apk upgrade && \
-    apk add --no-cache expat git git-subtree tini && \
-    apk add --no-cache aws-cli --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community && \
-    apk upgrade --no-cache python3 --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main && \
-    rm /var/cache/apk/*
+RUN chmod 600 /app/gits-key
+RUN apk update && apk upgrade
+RUN apk add --no-cache expat git git-subtree tini
+RUN apk upgrade --no-cache python3 --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main
+RUN apk add --no-cache libimagequant --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main
+RUN apk add --no-cache aws-cli --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community
+RUN rm /var/cache/apk/*
 RUN git config --global user.email "hub@agilestacks.io"
 RUN git config --global user.name "Automation Hub"
 RUN git config --global uploadpack.allowAnySHA1InWant true

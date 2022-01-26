@@ -12,7 +12,7 @@ metadata:
 spec:
   accessModes:
   - ReadWriteOnce
-  storageClassName: default
+  storageClassName: ${component.git-service.volume.storageClass}
   resources:
     requests:
       storage: "${component.git-service.volume.size}"

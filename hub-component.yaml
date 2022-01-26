@@ -50,6 +50,8 @@ parameters:
     kind: user
   - name: volume.size
     value: 30Gi
+  - name: volume.storageClass
+    value: default
   - name: repos
     value: /git
     env: REPOS_PATH
